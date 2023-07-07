@@ -1,0 +1,4 @@
+pandas==1.3.5
+websocket-client==1.4.1
+PyJWT==2.4.0
+requests==2.26.0
