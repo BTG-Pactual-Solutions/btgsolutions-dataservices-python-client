@@ -136,9 +136,9 @@ class WebSocketClient:
             - Field is not required. 
             - Default: prints a message that the connection was closed.
         reconnect: bool
-            - Try reconnect if connection is closed.
-            - Field is not required. 
-            - Default: True.
+            Try reconnect if connection is closed.
+            Field is not required.
+            Default: True.
         """
         if on_open is None:
             on_open = _on_open
