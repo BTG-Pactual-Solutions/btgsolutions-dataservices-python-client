@@ -70,11 +70,10 @@ class WebSocketClient:
         **kwargs,
     ):
         self.api_key = api_key
-        self.token = Authenticator(self.api_key).token
-        self.protocol_str = {"Sec-WebSocket-Protocol": self.token}
         self.instruments = instruments
         self.ssl = ssl
 
+        self.__authenticator = Authenticator(self.api_key)
         if feed not in valid_feeds:
             raise FeedError(
                 f"Must provide a valid 'feed' parameter. Valid options are: {valid_feeds}"
@@ -162,8 +161,8 @@ class WebSocketClient:
             on_open=intermediary_on_open,
             on_message=intermediary_on_message,
             on_error=intermediary_on_error,
-            on_close=intermediary_on_close, 
-            header=self.protocol_str
+            on_close=intermediary_on_close,
+            header={"Sec-WebSocket-Protocol": self.__authenticator.token}
         )
 
         ssl_conf = {} if self.ssl else {"sslopt": {"cert_reqs": ssl.CERT_NONE}}
