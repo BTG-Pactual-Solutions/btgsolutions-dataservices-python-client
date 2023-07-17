@@ -27,6 +27,8 @@ def valid_ws_options(feed, target):
     return list(set(socket_urls[f'{feed}_{target}']))
 
 
-### Rest
 
+MAX_WS_RECONNECT_RETRIES = 5
+
+### Rest
 url_apis = "https://dataservices.btgpactualsolutions.com/api/v2"

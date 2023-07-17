@@ -2,13 +2,13 @@
 from typing import Optional, List
 from ..exceptions import WSTypeError, DelayedError, FeedError
 from ..rest import Authenticator
-from ..config import valid_feeds, valid_ws_options, valid_delayed_options, socket_urls
+from ..config import valid_feeds, valid_ws_options, valid_delayed_options, socket_urls, MAX_WS_RECONNECT_RETRIES
 from .websocket_default_functions import _on_open, _on_message, _on_error, _on_close
 import websocket 
 import json
 import ssl
 import threading
- 
+
 class WebSocketClient:
     """
     This class connects with BTG Solutions Data Services WebSocket, receiving trade and index data, in real time or delayed.
@@ -70,10 +70,11 @@ class WebSocketClient:
         **kwargs,
     ):
         self.api_key = api_key
-        self.token = Authenticator(self.api_key).token
-        self.protocol_str = {"Sec-WebSocket-Protocol": self.token}
         self.instruments = instruments
         self.ssl = ssl
+
+        self.__authenticator = Authenticator(self.api_key)
+        self.__nro_reconnect_retries = 0
 
         if feed not in valid_feeds:
             raise FeedError(
@@ -101,6 +102,7 @@ class WebSocketClient:
         on_message = None,
         on_error = None,
         on_close = None,
+        reconnect=True
     ):
         """
         Initializes a connection to websocket and subscribes to the instruments, if it was passed in the class initialization.
@@ -133,6 +135,10 @@ class WebSocketClient:
                 2. close_msg.
             - Field is not required. 
             - Default: prints a message that the connection was closed.
+        reconnect: bool
+            Try reconnect if connection is closed.
+            Field is not required.
+            Default: True.
         """
         if on_open is None:
             on_open = _on_open
@@ -147,6 +153,7 @@ class WebSocketClient:
             on_open()
             if self.instruments:
                 self.subscribe(self.instruments)
+            self.__nro_reconnect_retries = 0
 
         def intermediary_on_message(ws, data):
             on_message(data)
@@ -156,14 +163,22 @@ class WebSocketClient:
 
         def intermediary_on_close(ws, close_status_code, close_msg):
             on_close(close_status_code, close_msg)
+            
+            if reconnect:
+                if self.__nro_reconnect_retries == MAX_WS_RECONNECT_RETRIES:
+                    print(f"### Fail retriyng reconnect")
+                    return
+                self.__nro_reconnect_retries +=1
+                print(f"### Reconnecting.... Attempts: {self.__nro_reconnect_retries}/{MAX_WS_RECONNECT_RETRIES}")
+                self.run(on_open, on_message, on_error, on_close, reconnect)
 
         self.ws = websocket.WebSocketApp(
             url=self.url,
             on_open=intermediary_on_open,
             on_message=intermediary_on_message,
             on_error=intermediary_on_error,
-            on_close=intermediary_on_close, 
-            header=self.protocol_str
+            on_close=intermediary_on_close,
+            header={"Sec-WebSocket-Protocol": self.__authenticator.token}
         )
 
         ssl_conf = {} if self.ssl else {"sslopt": {"cert_reqs": ssl.CERT_NONE}}
