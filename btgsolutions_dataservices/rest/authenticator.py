@@ -1,9 +1,9 @@
-
-from ..exceptions import BadResponse
 import requests
-from ..config import url_apis
 import json
 import jwt
+import time
+from ..config import url_apis
+from ..exceptions import BadResponse
 
 class Authenticator:
     def __init__(self, api_key) -> None:
@@ -32,8 +32,11 @@ class Authenticator:
     
     @property
     def token(self):
-        try:
-            jwt.decode(self._token, options={"verify_signature": False})
-        except jwt.ExpiredSignatureError:
+        token_decoded = jwt.decode(self._token, options={"verify_signature": False})
+        exp = token_decoded.get("exp")
+        
+        if int(time.time()) >= exp:
             self._token = self.get_new_token()
+        
         return self._token
+    
