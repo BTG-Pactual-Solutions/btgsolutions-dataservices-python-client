@@ -10,6 +10,7 @@ socket_urls = {
     'stocks_realtime': {
         'trades': "wss://dataservices.btgpactualsolutions.com/stream/v2/marketdata/trade/stocks",
         'books': "wss://dataservices.btgpactualsolutions.com/stream/v2/marketdata/book/stocks",
+        'stoploss': "wss://dataservices.btgpactualsolutions.com/stream/v1/marketdata/stoploss/stocks",
     },
     'stocks_delayed': {
         'trades': "wss://dataservices.btgpactualsolutions.com/stream/v2/marketdata/trade/stocks/delayed",

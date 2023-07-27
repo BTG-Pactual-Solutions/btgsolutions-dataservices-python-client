@@ -224,3 +224,26 @@ class WebSocketClient:
         """
         self.__send({'action':'unsubscribe', 'params': list_instruments})
         print(f'Socket subscribed the following instrument(s): {list_instruments}')
+
+    def notify_stoploss(self, instrument_params):
+        """
+        Create a stoploss notification routine on the provided instrument(s).
+
+        Parameters
+        ----------
+        instrument_params: dict
+            Field is required.
+        """
+        self.__send({'action':'notify_stoploss', 'params': instrument_params})
+
+    def stoploss_status(self):
+        """
+        Return client stop loss status.
+        """
+        self.__send({'action':'stoploss_status'})
+
+    def clear_stoploss(self):
+        """
+        Clears client stop loss notifications.
+        """
+        self.__send({'action':'clear_stoploss'})
