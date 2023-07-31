@@ -3,6 +3,7 @@ socket_urls = {
     'derivatives_realtime': {
         'trades': "wss://dataservices.btgpactualsolutions.com/stream/v2/marketdata/trade/derivatives",
         'books': "wss://dataservices.btgpactualsolutions.com/stream/v2/marketdata/book/derivatives",
+        'stoploss': "wss://dataservices.btgpactualsolutions.com/stream/v1/marketdata/stoploss/derivatives",
     },
     'derivatives_delayed': {
         'trades': "wss://dataservices.btgpactualsolutions.com/stream/v2/marketdata/trade/derivatives/delayed",
