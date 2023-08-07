@@ -12,6 +12,14 @@ btgsolutions\_dataservices.rest.authenticator module
    :undoc-members:
    :show-inheritance:
 
+btgsolutions\_dataservices.rest.bulk\_data module
+-------------------------------------------------
+
+.. automodule:: btgsolutions_dataservices.rest.bulk_data
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 btgsolutions\_dataservices.rest.historical\_candles module
 ----------------------------------------------------------
 
