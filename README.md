@@ -33,5 +33,13 @@ import btgsolutions_dataservices as btg
 hist_candles = btg.HistoricalCandles(api_key='YOUR_API_KEY')
 hist_candles.get_historical_candles(ticker='PETR4', lookback='5D', mode='absolute').plot(x='date', y='close_price', kind='scatter')
 ```
+
+## Example - BulkData
+```python
+import btgsolutions_dataservices as btg
+bulk_data = btg.BulkData(api_key='YOUR_API_KEY')
+bulk_data.get_data(ticker='PETR4', date='2023-07-03', data_type='trades')
+```
+
 ## Documentation
 The official documentation is hosted at https://python-client-docs.dataservices.btgpactualsolutions.com/

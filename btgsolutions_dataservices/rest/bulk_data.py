@@ -5,6 +5,8 @@ from ..config import url_api_v1
 from .authenticator import Authenticator
 import json
 import pandas as pd
+from io import BytesIO
+import pyarrow.parquet as pq
 
 class BulkData:
     """
@@ -69,13 +71,21 @@ class BulkData:
         if response.status_code == 200:
 
             try:
-                content_disposition = response.headers.get('Content-Disposition', '')
-                filename = content_disposition.split('filename=')[1]
 
-                # Write the content to a file
-                with open(filename, 'wb') as file:
-                    file.write(response.content)
-                return None
+                if raw_data == False:
+                    parquet_buffer = BytesIO(response.content)
+                    parquet_file = pq.ParquetFile(parquet_buffer)
+                    df = parquet_file.read().to_pandas()
+                    return df
+
+                else:
+                    content_disposition = response.headers.get('Content-Disposition', '')
+                    filename = content_disposition.split('filename=')[1]
+
+                    # Write the content to a file
+                    with open(filename, 'wb') as file:
+                        file.write(response.content)
+                    return None
                 
             except Exception as e:
                 print(f'error while trying to retrieve file:\n{e}')
