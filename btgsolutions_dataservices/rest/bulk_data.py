@@ -44,6 +44,7 @@ class BulkData:
         ticker:str,
         date:str,
         data_type:str='trades',
+        n:int=10,
         raw_data:bool=False
     ):
         """
@@ -61,6 +62,9 @@ class BulkData:
         data_type: str
             Market data type.
             Field is required. Example: 'trades', 'trades-rlp', 'books'.
+        n: int
+            Book depth.
+            Field is not required. Default: 10. N must be an integer between 1 and 50, boundaries included.
         raw_data: bool
             If false, returns data in a dataframe. If true, returns raw data.
             Field is not required. Default: False.
@@ -75,7 +79,16 @@ class BulkData:
                 if raw_data == False:
                     parquet_buffer = BytesIO(response.content)
                     parquet_file = pq.ParquetFile(parquet_buffer)
-                    df = parquet_file.read().to_pandas()
+
+                    if data_type == 'books':
+                        if not 1 <= n <= 50:
+                            raise Exception("'n' must be an integer between 1 and 50, boundaries included.")
+
+                        columns_to_filter = self.__get_cols(n)
+                        df = parquet_file.read(columns=columns_to_filter).to_pandas()
+                    else:
+                        df = parquet_file.read().to_pandas()
+
                     return df
 
                 else:
@@ -93,3 +106,12 @@ class BulkData:
 
         response = json.loads(response.text)
         raise BadResponse(f'Error: {response.get("ApiClientError", "")}.\n{response.get("SuggestedAction", "")}')
+
+    def __get_cols(self, n:int=10):
+
+        book_depth_col_types = ['bp','bq','op','oq']
+        book_depth_cols = [type+str(i) for type in book_depth_col_types for i in range(1,n+1)]
+        timestamp_col = ['timestamp']
+        columns_to_filter = timestamp_col + book_depth_cols
+
+        return columns_to_filter
