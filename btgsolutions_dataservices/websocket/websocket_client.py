@@ -247,3 +247,14 @@ class WebSocketClient:
         Clears client stop loss notifications.
         """
         self.__send({'action':'clear_stoploss'})
+
+    def get_last_event(self, ticker:str):
+        """
+        Get the last event for the provided ticker.
+
+        Parameters
+        ----------
+        ticker: str
+            Field is required.
+        """
+        self.__send({'action':'get_last_event', 'params': ticker})
