@@ -20,6 +20,13 @@ socket_urls = {
     'stocks_delayed': {
         'trades': "wss://dataservices.btgpactualsolutions.com/stream/v2/marketdata/trade/stocks/delayed",
     },
+    'options_realtime': {
+        'trades': "wss://dataservices.btgpactualsolutions.com/stream/v2/marketdata/trade/options",
+        'books': "wss://dataservices.btgpactualsolutions.com/stream/v2/marketdata/book/options",
+    },
+    'options_delayed': {
+        'trades': "wss://dataservices.btgpactualsolutions.com/stream/v2/marketdata/trade/options/delayed",
+    },
     'indices_realtime': "wss://dataservices.btgpactualsolutions.com/stream/v2/marketdata/indices",
     'indices_delayed': "wss://dataservices.btgpactualsolutions.com/stream/v2/marketdata/indices/delayed"
 }
