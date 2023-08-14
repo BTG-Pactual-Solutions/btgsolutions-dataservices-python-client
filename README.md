@@ -20,6 +20,16 @@ import btgsolutions_dataservices as btg
 ws = btg.WebSocketClient(api_key='YOUR_API_KEY', ws_type='trades', target='delayed', instruments=['PETR4', 'VALE3'])
 ws.run(on_message=lambda message: print(message))
 ```
+## Example - WebSocket Candles 1S
+```python
+import btgsolutions_dataservices as btg
+ws = btg.WebSocketClient(api_key='YOUR_API_KEY', ws_type='trades', target='delayed')
+ws.run(on_message=lambda message: print(message))
+ws.candle_subscribe(list_instruments=['PETR4','VALE3'], candle_type='partial')
+ws.candle_subscribe(list_instruments=['PRIO3'], candle_type='closed')
+ws.candle_subscribe(list_instruments=['WEGE3'], candle_type='all')
+ws.candle_unsubscribe(list_instruments=['PRIO3', 'PETR4'], candle_type='all')
+```
 
 ## Example - IntradayCandles
 ```python

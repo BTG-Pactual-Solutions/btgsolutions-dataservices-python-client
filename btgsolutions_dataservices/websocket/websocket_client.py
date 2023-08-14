@@ -47,7 +47,7 @@ class WebSocketClient:
 
     ws_type: str
         Connection type with WebSocketClient.
-        Options: 'trades' or 'book'.
+        Options: 'trades', 'books', 'stoploss', 'candles-1S', 'candles-1M'.
         If the feed is 'indices' this field is not used.
         Field is not required. Default: 'trades'.
 
@@ -258,3 +258,31 @@ class WebSocketClient:
             Field is required.
         """
         self.__send({'action':'get_last_event', 'params': ticker})
+
+    def candle_subscribe(self, list_instruments:list, candle_type:str):
+        """
+        Subscribes a list of instruments, for partial/closed candle updates.
+
+        Parameters
+        ----------
+        list_instruments: list
+            Field is required.
+        candle_type: str
+            Field is required.
+        """
+        self.__send({'action':'subscribe', 'params': list_instruments, 'type':candle_type})
+        print(f'Socket subscribed the following instrument(s): {list_instruments}')
+
+    def candle_unsubscribe(self, list_instruments:list, candle_type:str):
+        """
+        Unsubscribes a list of instruments, for partial/closed candle updates.
+
+        Parameters
+        ----------
+        list_instruments: list
+            Field is required.
+        candle_type: str
+            Field is required.
+        """
+        self.__send({'action':'unsubscribe', 'params': list_instruments, 'type':candle_type})
+        print(f'Socket unsubscribed the following instrument(s): {list_instruments}')

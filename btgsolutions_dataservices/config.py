@@ -3,7 +3,8 @@ socket_urls = {
     'derivatives_realtime': {
         'trades': "wss://dataservices.btgpactualsolutions.com/stream/v2/marketdata/trade/derivatives",
         'books': "wss://dataservices.btgpactualsolutions.com/stream/v2/marketdata/book/derivatives",
-        'candles': "wss://dataservices.btgpactualsolutions.com/stream/v1/marketdata/candles/derivatives",
+        'candles-1S': "wss://dataservices.btgpactualsolutions.com/stream/v1/marketdata/candles/1S/derivatives",
+        'candles-1M': "wss://dataservices.btgpactualsolutions.com/stream/v1/marketdata/candles/1M/derivatives",
         'stoploss': "wss://dataservices.btgpactualsolutions.com/stream/v1/marketdata/stoploss/derivatives",
     },
     'derivatives_delayed': {
@@ -12,7 +13,8 @@ socket_urls = {
     'stocks_realtime': {
         'trades': "wss://dataservices.btgpactualsolutions.com/stream/v2/marketdata/trade/stocks",
         'books': "wss://dataservices.btgpactualsolutions.com/stream/v2/marketdata/book/stocks",
-        'candles': "wss://dataservices.btgpactualsolutions.com/stream/v1/marketdata/candles/stocks",
+        'candles-1S': "wss://dataservices.btgpactualsolutions.com/stream/v1/marketdata/candles/1S/stocks",
+        'candles-1M': "wss://dataservices.btgpactualsolutions.com/stream/v1/marketdata/candles/1M/stocks",
         'stoploss': "wss://dataservices.btgpactualsolutions.com/stream/v1/marketdata/stoploss/stocks",
     },
     'stocks_delayed': {
