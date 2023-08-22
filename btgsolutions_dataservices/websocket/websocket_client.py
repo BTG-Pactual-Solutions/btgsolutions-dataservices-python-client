@@ -178,7 +178,10 @@ class WebSocketClient:
             on_message=intermediary_on_message,
             on_error=intermediary_on_error,
             on_close=intermediary_on_close,
-            header={"Sec-WebSocket-Protocol": self.__authenticator.token}
+            header={
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.54 Safari/537.36",
+                "Sec-WebSocket-Protocol": self.__authenticator.token,
+            }
         )
 
         ssl_conf = {} if self.ssl else {"sslopt": {"cert_reqs": ssl.CERT_NONE}}
