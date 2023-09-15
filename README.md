@@ -51,5 +51,12 @@ bulk_data = btg.BulkData(api_key='YOUR_API_KEY')
 bulk_data.get_data(ticker='PETR4', date='2023-07-03', data_type='trades')
 ```
 
+## Example - HighFrequencyNews
+```python
+import btgsolutions_dataservices as btg
+hfn = btg.HighFrequencyNews(api_key='YOUR_API_KEY')
+hfn.latest_news()
+```
+
 ## Documentation
 The official documentation is hosted at https://python-client-docs.dataservices.btgpactualsolutions.com/

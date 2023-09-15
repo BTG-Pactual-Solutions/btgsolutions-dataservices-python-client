@@ -289,3 +289,10 @@ class WebSocketClient:
         """
         self.__send({'action':'unsubscribe', 'params': list_instruments, 'type':candle_type})
         print(f'Socket unsubscribed the following instrument(s): {list_instruments}')
+
+    def get_latest_news(self):
+        """
+        Get the latest news from our High Frequency News service.
+
+        """
+        self.__send({'action':'latest_news'})

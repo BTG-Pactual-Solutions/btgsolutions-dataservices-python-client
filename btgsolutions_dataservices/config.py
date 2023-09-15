@@ -28,7 +28,11 @@ socket_urls = {
         'trades': "wss://dataservices.btgpactualsolutions.com/stream/v2/marketdata/trade/options/delayed",
     },
     'indices_realtime': "wss://dataservices.btgpactualsolutions.com/stream/v2/marketdata/indices",
-    'indices_delayed': "wss://dataservices.btgpactualsolutions.com/stream/v2/marketdata/indices/delayed"
+    'indices_delayed': "wss://dataservices.btgpactualsolutions.com/stream/v2/marketdata/indices/delayed",
+    
+    'hfn_realtime': {
+        'brazil': "wss://dataservices.btgpactualsolutions.com/stream/v2/hfn/brazil",
+    },
 }
 
 keys_socket = list(socket_urls.keys())
