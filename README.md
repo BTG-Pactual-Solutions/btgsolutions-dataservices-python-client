@@ -31,6 +31,13 @@ ws.candle_subscribe(list_instruments=['WEGE3'], candle_type='all')
 ws.candle_unsubscribe(list_instruments=['PRIO3', 'PETR4'], candle_type='all')
 ```
 
+## Example - WebSocket High Frequency News
+```python
+import btgsolutions_dataservices as btg
+ws = btg.WebSocketClient(api_key='YOUR_API_KEY', feed='hfn', ws_type='brazil')
+ws.run(on_message=lambda message: print(message))
+```
+
 ## Example - IntradayCandles
 ```python
 import btgsolutions_dataservices as btg
@@ -42,6 +49,13 @@ int_candles.get_intraday_candles(market_type='stocks', tickers=['PETR4', 'VALE3'
 import btgsolutions_dataservices as btg
 hist_candles = btg.HistoricalCandles(api_key='YOUR_API_KEY')
 hist_candles.get_historical_candles(ticker='PETR4', lookback='5D', mode='absolute').plot(x='date', y='close_price', kind='scatter')
+```
+
+## Example - Quotes
+```python
+import btgsolutions_dataservices as btg
+quotes = btg.Quotes(api_key='YOUR_API_KEY')
+quotes.get_quote(market_type = 'stocks', tickers = ['PETR4', 'VALE3'])
 ```
 
 ## Example - BulkData
