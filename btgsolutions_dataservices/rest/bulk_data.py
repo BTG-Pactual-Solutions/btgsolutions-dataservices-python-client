@@ -48,7 +48,7 @@ class BulkData:
         raw_data:bool=False
     ):
         """
-        This method provides historical candles for a given ticket in determined period.
+        This method provides tick-by-tick market data (trades, RLP-trades, books) for a given ticker and date.
 
         Parameters
         ----------------

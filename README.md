@@ -65,6 +65,13 @@ bulk_data = btg.BulkData(api_key='YOUR_API_KEY')
 bulk_data.get_data(ticker='PETR4', date='2023-07-03', data_type='trades')
 ```
 
+## Example - Intraday Tick Data
+```python
+import btgsolutions_dataservices as btg
+intra_tickdata = btg.IntradayTickData(api_key='YOUR_API_KEY')
+intra_tickdata.get_trades(ticker='PETR4')
+```
+
 ## Example - HighFrequencyNews
 ```python
 import btgsolutions_dataservices as btg
