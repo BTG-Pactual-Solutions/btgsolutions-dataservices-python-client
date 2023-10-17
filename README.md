@@ -13,12 +13,24 @@ pip3 install btgsolutions-dataservices-python-client
 import btgsolutions_dataservices as btg
 ws = btg.WebSocketClient(api_key='YOUR_API_KEY', ws_type='books', instruments=['PETR4', 'VALE3'])
 ws.run(on_message=lambda message: print(message))
+
+## The following is optional to keep the program running in a .py file:
+# from time import sleep
+# while True:
+#   sleep(1)
+
 ```
 ## Example - WebSocket Trades Delayed
 ```python
 import btgsolutions_dataservices as btg
 ws = btg.WebSocketClient(api_key='YOUR_API_KEY', ws_type='trades', target='delayed', instruments=['PETR4', 'VALE3'])
 ws.run(on_message=lambda message: print(message))
+
+## The following is optional to keep the program running in a .py file:
+# from time import sleep
+# while True:
+#   sleep(1)
+
 ```
 ## Example - WebSocket Candles 1S
 ```python
@@ -26,9 +38,16 @@ import btgsolutions_dataservices as btg
 ws = btg.WebSocketClient(api_key='YOUR_API_KEY', ws_type='candles-1S', target='delayed')
 ws.run(on_message=lambda message: print(message))
 ws.candle_subscribe(list_instruments=['PETR4','VALE3'], candle_type='partial')
-ws.candle_subscribe(list_instruments=['PRIO3'], candle_type='closed')
-ws.candle_subscribe(list_instruments=['WEGE3'], candle_type='all')
-ws.candle_unsubscribe(list_instruments=['PRIO3', 'PETR4'], candle_type='all')
+
+## The following is optional to keep the program running in a .py file:
+# from time import sleep
+# while True:
+#   sleep(1)
+
+## Another examples
+# ws.candle_subscribe(list_instruments=['PRIO3'], candle_type='closed')
+# ws.candle_subscribe(list_instruments=['WEGE3'], candle_type='all')
+# ws.candle_unsubscribe(list_instruments=['PRIO3', 'PETR4'], candle_type='all')
 ```
 
 ## Example - WebSocket High Frequency News
@@ -36,6 +55,11 @@ ws.candle_unsubscribe(list_instruments=['PRIO3', 'PETR4'], candle_type='all')
 import btgsolutions_dataservices as btg
 ws = btg.WebSocketClient(api_key='YOUR_API_KEY', feed='hfn', ws_type='brazil')
 ws.run(on_message=lambda message: print(message))
+
+## The following is optional to keep the program running in a .py file:
+# from time import sleep
+# while True:
+#   sleep(1)
 ```
 
 ## Example - IntradayCandles
@@ -48,7 +72,8 @@ int_candles.get_intraday_candles(market_type='stocks', tickers=['PETR4', 'VALE3'
 ```python
 import btgsolutions_dataservices as btg
 hist_candles = btg.HistoricalCandles(api_key='YOUR_API_KEY')
-hist_candles.get_historical_candles(ticker='PETR4', lookback='5D', mode='absolute').plot(x='date', y='close_price', kind='scatter')
+hist_candles.get_intraday_history_candles(ticker='PETR4',  market_type='stocks', corporate_events_adj=True, date='2023-10-06', candle='1m', rmv_after_market=True, timezone='UTC', raw_data=False).plot(x='candle_time', y='close_price', kind='scatter')
+# hist_candles.get_interday_history_candles(ticker='PETR4',  market_type='stocks', corporate_events_adj=True, start_date='2023-10-01', end_date='2023-10-13', rmv_after_market=True, timezone='UTC', raw_data=False).plot(x='date', y='close_price', kind='scatter')
 ```
 
 ## Example - Quotes

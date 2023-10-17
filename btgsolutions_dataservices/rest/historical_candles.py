@@ -1,7 +1,7 @@
 from typing import Optional
-from ..exceptions import BadResponse
+from ..exceptions import BadResponse, MarketTypeError
 import requests
-from ..config import url_apis
+from ..config import url_apis_v3
 from .authenticator import Authenticator
 import json
 import pandas as pd
@@ -38,11 +38,15 @@ class HistoricalCandles:
         self.token = Authenticator(self.api_key).token
         self.headers = {"authorization": f"authorization {self.token}"}
 
-    def get_historical_candles(
+    def get_intraday_history_candles(
         self,
+        market_type:str,
         ticker:str,
-        lookback:str,
-        mode:str='absolute',
+        date:str,
+        candle:str,
+        corporate_events_adj:bool,
+        rmv_after_market:bool,
+        timezone:str,
         raw_data:bool=False
     ):
         """
@@ -50,22 +54,35 @@ class HistoricalCandles:
 
         Parameters
         ----------------
+        market_type: str
+            Field is required. Allowed values: 'stocks' or 'derivatives'.
         ticker: str
             Ticker that needs to be returned.
             Field is required. Example: 'PETR4'.
-        lookback: str
-            Date period.
-            Field is required. Example: '5D', '1M', '6M', 'YTD', '1Y', '2Y' or '3Y'.
-        mode: str
-            Candle mode.
-            Field is not required. Example: 'absolute' or 'relative'.
-            Default: 'absolute'.
+        date: string<date>
+            Date of requested data. Format: "YYYY-MM-DD".
+            Field is required. Example: '2023-10-06'.
+        candle: str
+            Candle period.
+            Field is required. Allowed values: '1s', '1m', '5m', '15m', '30m' or '1h'.
+        corporate_events_adj: bool
+            Corporate events adjustment.
+            Field is required. Allowed values: 'true' or 'false'.
+        rmv_after_market: bool
+            Remove trades after market close.
+            Field is required. Allowed values: 'true' or 'false'.
+        timezone: str
+            Timezone of the datetime.
+            Field is required. Allowed values: 'America/Sao_Paulo' or 'UTC'.
         raw_data: bool
             If false, returns data in a dataframe. If true, returns raw data.
             Field is not required. Default: False.
         """     
-        url = f"{url_apis}/marketdata/candles/historical?ticker={ticker}&lookback={lookback}&mode={mode}"
-
+        
+        if market_type not in ['stocks', 'derivatives']:
+            raise MarketTypeError(f'Allowed values: "stocks" or "derivatives". Input value: "{market_type}".')
+        
+        url = f"{url_apis_v3}/marketdata/history/candles/intraday/{market_type}?ticker={ticker}&corporate_events_adj={corporate_events_adj}&rmv_after_market={rmv_after_market}&timezone={timezone}&date={date}&candle={candle}"
         response = requests.request("GET", url,  headers=self.headers)
         if response.status_code == 200:
             response_data = json.loads(response.text)
@@ -73,16 +90,56 @@ class HistoricalCandles:
 
         response = json.loads(response.text)
         raise BadResponse(f'Error: {response.get("ApiClientError", "")}.\n{response.get("SuggestedAction", "")}')
+    
+    def get_interday_history_candles(
+        self,
+        market_type:str,
+        ticker:str,
+        start_date:str,
+        end_date:str,
+        corporate_events_adj:bool,
+        rmv_after_market:bool,
+        timezone:str,
+        raw_data:bool=False
+    ):
+        """
+        This method provides historical candles for a given ticket in determined period.
 
-    def get_available_tickers(self):  
-        """
-        This method provides all tickers available for query.   
-        """
-        url = f"{url_apis}/marketdata/candles/historical/available_tickers"
+        Parameters
+        ----------------
+        market_type: str
+            Field is required. Allowed values: 'stocks' or 'derivatives'.
+        ticker: str
+            Ticker that needs to be returned.
+            Field is required. Example: 'PETR4'.
+        start_date: string<date>
+            Start date of analysis. Format: "YYYY-MM-DD".
+            Field is required. Example: '2022-10-06'.
+        end_date: string<date>
+            End date of analysis. Format: "YYYY-MM-DD".
+            Field is required. Example: '2023-01-22'.
+        corporate_events_adj: bool
+            Corporate events adjustment.
+            Field is required. Allowed values: 'true' or 'false'.
+        rmv_after_market: bool
+            Remove trades after market close.
+            Field is required. Allowed values: 'true' or 'false'.
+        timezone: str
+            Timezone of the datetime.
+            Field is required. Allowed values: 'America/Sao_Paulo' or 'UTC'.
+        raw_data: bool
+            If false, returns data in a dataframe. If true, returns raw data.
+            Field is not required. Default: False.
+        """     
+        
+        if market_type not in ['stocks', 'derivatives']:
+            raise MarketTypeError(f'Allowed values: "stocks" or "derivatives". Input value: "{market_type}".')
+        
+        url = f"{url_apis_v3}/marketdata/history/candles/interday/{market_type}?ticker={ticker}&corporate_events_adj={corporate_events_adj}&rmv_after_market={rmv_after_market}&timezone={timezone}&start_date={start_date}&end_date={end_date}"
         response = requests.request("GET", url,  headers=self.headers)
-
         if response.status_code == 200:
-            return json.loads(response.text).get('available_tickers', [])
-        else:
-            response = json.loads(response.text)
-            raise BadResponse(f'Error: {response.get("ApiClientError", "")}.\n{response.get("SuggestedAction", "")}')
+            response_data = json.loads(response.text)
+            return response_data if raw_data else pd.DataFrame(response_data)
+
+        response = json.loads(response.text)
+        raise BadResponse(f'Error: {response.get("ApiClientError", "")}.\n{response.get("SuggestedAction", "")}')

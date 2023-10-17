@@ -50,3 +50,4 @@ MAX_WS_RECONNECT_RETRIES = 5
 ### Rest
 url_apis = "https://dataservices.btgpactualsolutions.com/api/v2"
 url_api_v1 = "https://dataservices.btgpactualsolutions.com/api/v1"
+url_apis_v3 = "https://dataservices.btgpactualsolutions.com/api/v3"
