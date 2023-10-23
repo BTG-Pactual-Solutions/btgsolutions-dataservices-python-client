@@ -10,19 +10,35 @@ class HistoricalCandles:
     """
     This class provides historical candles for a given ticker or all tickers available for query.
 
-    * Main use case:
+    * Main use case - Interday:
 
     >>> from btgsolutions_dataservices import HistoricalCandles
     >>> hist_candles = HistoricalCandles(
     >>>     api_key='YOUR_API_KEY',
     >>> )
-    >>> hist_candles.get_historical_candles(
+    >>> hist_candles.get_interday_history_candles(
     >>>     ticker = 'PETR4',
-    >>>     lookback = '1M',
-    >>>     mode = 'relative',
+    >>>     market_type = 'stocks',
+    >>>     corporate_events_adj = True,
+    >>>     start_date = '2023-10-11',
+    >>>     end_date = '2023-10-20', 
+    >>>     rmv_after_market = True,
+    >>>     timezone = 'UTC',
     >>>     raw_data = False
     >>> )
-    >>> hist_candles.get_available_tickers()
+
+    * Main use case - Intraday:
+
+    >>> hist_candles.get_intraday_history_candles(
+    >>>     ticker = 'PETR4',
+    >>>     market_type = 'stocks',
+    >>>     corporate_events_adj = True,
+    >>>     date = '2023-10-20', 
+    >>>     rmv_after_market = True,
+    >>>     timezone = 'UTC',
+    >>>     candle='1m',
+    >>>     raw_data = False
+    >>> )
 
     Parameters
     ----------------

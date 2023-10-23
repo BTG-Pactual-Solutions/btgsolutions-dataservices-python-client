@@ -18,8 +18,8 @@ sys.path.insert(0, os.path.abspath('.'))
 # -- Project information -----------------------------------------------------
 
 project = 'BTG Solutions - Data Services'
-copyright = '2023, BTG Solutions'
-author = 'BTG Solutions'
+copyright = '2023, BTG Solutions Data Services powered by BTG Pactual Solutions'
+author = 'BTG Solutions Data Services powered by BTG Pactual Solutions'
 
 
 # -- General configuration ---------------------------------------------------
