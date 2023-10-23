@@ -1,6 +1,6 @@
 # BTG Solutions - Data Service
 
-It's a Python library to get Brazilian Financial Market Data.
+Python library to get Brazilian Financial Market Data.
 
 ## Installation
 
@@ -68,12 +68,26 @@ import btgsolutions_dataservices as btg
 int_candles = btg.IntradayCandles(api_key='YOUR_API_KEY')
 int_candles.get_intraday_candles(market_type='stocks', tickers=['PETR4', 'VALE3'], candle_period='1m', mode='relative', raw_data=True)
 ```
-## Example - Plot HistoricalCandles
+
+## Example - Get Interday History Candles
+```python
+import btgsolutions_dataservices as btg
+hist_candles = btg.HistoricalCandles(api_key='YOUR_API_KEY')
+hist_candles.get_interday_history_candles(ticker='PETR4',  market_type='stocks', corporate_events_adj=True, start_date='2023-10-01', end_date='2023-10-13', rmv_after_market=True, timezone='UTC', raw_data=False)
+```
+
+## Example - Get Intraday History Candles
+```python
+import btgsolutions_dataservices as btg
+hist_candles = btg.HistoricalCandles(api_key='YOUR_API_KEY')
+hist_candles.get_intraday_history_candles(ticker='PETR4',  market_type='stocks', corporate_events_adj=True, date='2023-10-06', candle='1m', rmv_after_market=True, timezone='UTC', raw_data=False)
+```
+
+## Example - Plot History Candles
 ```python
 import btgsolutions_dataservices as btg
 hist_candles = btg.HistoricalCandles(api_key='YOUR_API_KEY')
 hist_candles.get_intraday_history_candles(ticker='PETR4',  market_type='stocks', corporate_events_adj=True, date='2023-10-06', candle='1m', rmv_after_market=True, timezone='UTC', raw_data=False).plot(x='candle_time', y='close_price', kind='scatter')
-# hist_candles.get_interday_history_candles(ticker='PETR4',  market_type='stocks', corporate_events_adj=True, start_date='2023-10-01', end_date='2023-10-13', rmv_after_market=True, timezone='UTC', raw_data=False).plot(x='date', y='close_price', kind='scatter')
 ```
 
 ## Example - Quotes
