@@ -32,6 +32,30 @@ ws.run(on_message=lambda message: print(message))
 #   sleep(1)
 
 ```
+## Example - WebSocket Trades with 1 second throttle
+```python
+import btgsolutions_dataservices as btg
+ws = btg.WebSocketClient(api_key='YOUR_API_KEY', ws_type='trades', target='throttle', instruments=['PETR4', 'VALE3'])
+ws.run(on_message=lambda message: print(message))
+
+## The following is optional to keep the program running in a .py file:
+# from time import sleep
+# while True:
+#   sleep(1)
+```
+
+## Example - WebSocket Securities (Derivatives)
+```python
+import btgsolutions_dataservices as btg
+ws = btg.WebSocketClient(api_key='YOUR_API_KEY', ws_type='securities', feed='stocks', target='realtime')
+ws.run(on_message=lambda message: print(message))
+
+## The following is optional to keep the program running in a .py file:
+# from time import sleep
+# while True:
+#   sleep(1)
+```
+
 ## Example - WebSocket Candles 1S
 ```python
 import btgsolutions_dataservices as btg

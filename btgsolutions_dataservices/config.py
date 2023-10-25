@@ -1,6 +1,7 @@
 ### WebSocket 
 socket_urls = {
     'derivatives_realtime': {
+        'securities': "wss://dataservices.btgpactualsolutions.com/stream/v1/marketdata/sec_list/derivatives",
         'trades': "wss://dataservices.btgpactualsolutions.com/stream/v2/marketdata/trade/derivatives",
         'books': "wss://dataservices.btgpactualsolutions.com/stream/v2/marketdata/book/derivatives",
         'candles-1S': "wss://dataservices.btgpactualsolutions.com/stream/v1/marketdata/candles/1S/derivatives",
@@ -10,7 +11,12 @@ socket_urls = {
     'derivatives_delayed': {
         'trades': "wss://dataservices.btgpactualsolutions.com/stream/v2/marketdata/trade/derivatives/delayed",
     },
+    'derivatives_throttle': {
+        'trades': "wss://dataservices.btgpactualsolutions.com/stream/v2/marketdata/throttle/trade/derivatives",
+        'books': "wss://dataservices.btgpactualsolutions.com/stream/v2/marketdata/throttle/book/derivatives",
+    },
     'stocks_realtime': {
+        'securities': "wss://dataservices.btgpactualsolutions.com/stream/v1/marketdata/sec_list/stocks",
         'trades': "wss://dataservices.btgpactualsolutions.com/stream/v2/marketdata/trade/stocks",
         'books': "wss://dataservices.btgpactualsolutions.com/stream/v2/marketdata/book/stocks",
         'candles-1S': "wss://dataservices.btgpactualsolutions.com/stream/v1/marketdata/candles/1S/stocks",
@@ -20,12 +26,21 @@ socket_urls = {
     'stocks_delayed': {
         'trades': "wss://dataservices.btgpactualsolutions.com/stream/v2/marketdata/trade/stocks/delayed",
     },
+    'stocks_throttle': {
+        'trades': "wss://dataservices.btgpactualsolutions.com/stream/v2/marketdata/throttle/trade/stocks",
+        'books': "wss://dataservices.btgpactualsolutions.com/stream/v2/marketdata/throttle/book/stocks",
+    },
     'options_realtime': {
+        'securities': "wss://dataservices.btgpactualsolutions.com/stream/v1/marketdata/sec_list/options",
         'trades': "wss://dataservices.btgpactualsolutions.com/stream/v2/marketdata/trade/options",
         'books': "wss://dataservices.btgpactualsolutions.com/stream/v2/marketdata/book/options",
     },
     'options_delayed': {
         'trades': "wss://dataservices.btgpactualsolutions.com/stream/v2/marketdata/trade/options/delayed",
+    },
+    'options_throttle': {
+        'trades': "wss://dataservices.btgpactualsolutions.com/stream/v2/marketdata/throttle/trade/options",
+        'books': "wss://dataservices.btgpactualsolutions.com/stream/v2/marketdata/throttle/book/options",
     },
     'indices_realtime': "wss://dataservices.btgpactualsolutions.com/stream/v2/marketdata/indices",
     'indices_delayed': "wss://dataservices.btgpactualsolutions.com/stream/v2/marketdata/indices/delayed",
