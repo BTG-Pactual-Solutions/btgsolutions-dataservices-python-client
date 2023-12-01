@@ -96,7 +96,7 @@ class MarketDataWebSocketClient:
             raise FeedError(f"Must provide a valid 'exchange' parameter. Valid options are: {VALID_EXCHANGES}")
         if data_type not in VALID_MARKET_DATA_TYPES:
             raise FeedError(f"Must provide a valid 'data_type' parameter. Valid options are: {VALID_MARKET_DATA_TYPES}")
-        if data_subtype not in VALID_MARKET_DATA_TYPES:
+        if data_subtype not in VALID_MARKET_DATA_SUBTYPES:
             raise FeedError(f"Must provide a valid 'data_subtype' parameter. Valid options are: {VALID_MARKET_DATA_SUBTYPES}")
 
         try:
