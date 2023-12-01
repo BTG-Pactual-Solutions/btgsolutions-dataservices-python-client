@@ -2,25 +2,26 @@
 from typing import Optional, List
 from ..exceptions import WSTypeError, DelayedError, FeedError
 from ..rest import Authenticator
-from ..config import valid_feeds, valid_ws_options, valid_delayed_options, socket_urls, MAX_WS_RECONNECT_RETRIES
+from ..config import market_data_socket_urls, MAX_WS_RECONNECT_RETRIES, VALID_STREAM_TYPES, VALID_EXCHANGES, VALID_MARKET_DATA_TYPES, VALID_MARKET_DATA_SUBTYPES, REALTIME, B3, TRADES, INDICES, ALL, STOCKS
 from .websocket_default_functions import _on_open, _on_message, _on_error, _on_close
 import websocket 
 import json
 import ssl
 import threading
 
-class WebSocketClient:
+class MarketDataWebSocketClient:
     """
     This class connects with BTG Solutions Data Services WebSocket, receiving trade and index data, in real time or delayed.
 
     * Main use case:
 
-    >>> from btgsolutions_dataservices import WebSocketClient
-    >>> ws = WebSocketClient(
+    >>> from btgsolutions_dataservices import MarketDataWebSocketClient
+    >>> ws = MarketDataWebSocketClient(
     >>>     api_key='YOUR_API_KEY',
-    >>>     feed='stocks',
-    >>>     target='realtime',
-    >>>     ws_type='trades',
+    >>>     stream_type='realtime',
+    >>>     exchange='b3',
+    >>>     data_type='trades',
+    >>>     data_subtype='stocks',
     >>>     instruments=['PETR4'],
     >>>     ssl=True
     >>> )
@@ -35,21 +36,25 @@ class WebSocketClient:
         User identification key.
         Field is required.
 
-    feed: str
+    stream_type: str
         Websocket connection feed.
-        Options: 'stocks', 'options', 'derivatives' or 'indices'
-        Field is not required. Default: 'stocks'.
-
-    target: str
-        Data update type.
-        Options: 'realtime' or 'delayed'.
+        Options: 'realtime', 'delayed'.
         Field is not required. Default: 'realtime'.
 
-    ws_type: str
-        Connection type with WebSocketClient.
-        Options: 'trades', 'books', 'stoploss', 'candles-1S', 'candles-1M'.
-        If the feed is 'indices' this field is not used.
+    exchange: str
+        Exchange name.
+        Options: 'b3' or 'bmv'.
+        Field is not required. Default: 'b3'.
+
+    data_type: str
+        Market Data type.
+        Options: 'trades', 'books', 'indices', 'securities', 'stoploss', 'candles-1S', 'candles-1M'.
         Field is not required. Default: 'trades'.
+    
+    data_subtype: str
+        Market Data subtype (when applicable).
+        Options: 'stocks', 'options', 'derivatives'.
+        Field is not required. Default: None.
 
     instruments: list
         List of tickers or indexes to subscribe.
@@ -62,9 +67,10 @@ class WebSocketClient:
     def __init__(
         self,
         api_key:str,
-        feed:Optional[str] = 'stocks',
-        target:Optional[str] = 'realtime',
-        ws_type:Optional[str] = 'trade',
+        stream_type:Optional[str] = REALTIME,
+        exchange:Optional[str] = B3,
+        data_type:Optional[str] = TRADES,
+        data_subtype:Optional[str] = None,
         instruments:Optional[List[str]] = [],
         ssl:Optional[bool] = True,
         **kwargs,
@@ -76,23 +82,27 @@ class WebSocketClient:
         self.__authenticator = Authenticator(self.api_key)
         self.__nro_reconnect_retries = 0
 
-        if feed not in valid_feeds:
-            raise FeedError(
-                f"Must provide a valid 'feed' parameter. Valid options are: {valid_feeds}"
-            )
-        if target not in valid_delayed_options:
-            raise DelayedError(
-                f"Must provide a valid 'target' parameter. Valid options are: {valid_delayed_options}"
-            )
-        
-        if feed != 'indice':
-            if ws_type not in valid_ws_options(feed, target):
-                raise WSTypeError(
-                    f"Must provide a valid 'ws_type' parameter. Valid options are: {valid_ws_options(feed, target)}"
-                )
-            self.url = socket_urls[f'{feed}_{target}'][ws_type]
-        else:
-            self.url = socket_urls[f'{feed}_{target}']
+        if data_subtype is None:
+            if exchange is B3 and data_type is not INDICES:
+                data_subtype = STOCKS
+            else:
+                data_subtype = ALL
+
+        if stream_type not in VALID_STREAM_TYPES:
+            raise FeedError(f"Must provide a valid 'stream_type' parameter. Valid options are: {VALID_STREAM_TYPES}")
+        if exchange not in VALID_EXCHANGES:
+            raise FeedError(f"Must provide a valid 'exchange' parameter. Valid options are: {VALID_EXCHANGES}")
+        if exchange not in VALID_EXCHANGES:
+            raise FeedError(f"Must provide a valid 'exchange' parameter. Valid options are: {VALID_EXCHANGES}")
+        if data_type not in VALID_MARKET_DATA_TYPES:
+            raise FeedError(f"Must provide a valid 'data_type' parameter. Valid options are: {VALID_MARKET_DATA_TYPES}")
+        if data_subtype not in VALID_MARKET_DATA_TYPES:
+            raise FeedError(f"Must provide a valid 'data_subtype' parameter. Valid options are: {VALID_MARKET_DATA_SUBTYPES}")
+
+        try:
+            self.url = market_data_socket_urls[exchange][data_type][stream_type][data_subtype]
+        except:
+            raise WSTypeError(f"There is no WebSocket type for your specifications (stream_type:{stream_type}, exchange:{exchange}, data_type:{data_type}, data_subtype:{data_subtype})\nPlease check your request parameters and try again")
             
         self.websocket_cfg = kwargs
     
@@ -289,10 +299,3 @@ class WebSocketClient:
         """
         self.__send({'action':'unsubscribe', 'params': list_instruments, 'type':candle_type})
         print(f'Socket unsubscribed the following instrument(s): {list_instruments}')
-
-    def get_latest_news(self):
-        """
-        Get the latest news from our High Frequency News service.
-
-        """
-        self.__send({'action':'latest_news'})
