@@ -238,6 +238,18 @@ class MarketDataWebSocketClient:
         self.__send({'action':'unsubscribe', 'params': list_instruments})
         print(f'Socket subscribed the following instrument(s): {list_instruments}')
 
+    def subscribed_to(self):
+        """
+        Return client subscribed tickers.
+        """
+        self.__send({'action':'subscribed_to'})
+
+    def available_to_subscribe(self):
+        """
+        Return avaiable tickers to subscribe.
+        """
+        self.__send({'action':'available_to_subscribe'})
+
     def notify_stoploss(self, instrument_params):
         """
         Create a stoploss notification routine on the provided instrument(s).

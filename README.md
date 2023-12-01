@@ -11,7 +11,7 @@ pip3 install btgsolutions-dataservices-python-client
 ## Example - WebSocket Books
 ```python
 import btgsolutions_dataservices as btg
-ws = btg.WebSocketClient(api_key='YOUR_API_KEY', ws_type='books', instruments=['PETR4', 'VALE3'])
+ws = btg.MarketDataWebSocketClient(api_key='YOUR_API_KEY', data_type='books', instruments=['PETR4', 'VALE3'])
 ws.run(on_message=lambda message: print(message))
 
 ## The following is optional to keep the program running in a .py file:
@@ -23,7 +23,7 @@ ws.run(on_message=lambda message: print(message))
 ## Example - WebSocket Trades Delayed
 ```python
 import btgsolutions_dataservices as btg
-ws = btg.WebSocketClient(api_key='YOUR_API_KEY', ws_type='trades', target='delayed', instruments=['PETR4', 'VALE3'])
+ws = btg.MarketDataWebSocketClient(api_key='YOUR_API_KEY', data_type='trades', stream_type='delayed', instruments=['PETR4', 'VALE3'])
 ws.run(on_message=lambda message: print(message))
 
 ## The following is optional to keep the program running in a .py file:
@@ -35,7 +35,7 @@ ws.run(on_message=lambda message: print(message))
 ## Example - WebSocket Trades with 1 second throttle
 ```python
 import btgsolutions_dataservices as btg
-ws = btg.WebSocketClient(api_key='YOUR_API_KEY', ws_type='trades', target='throttle', instruments=['PETR4', 'VALE3'])
+ws = btg.MarketDataWebSocketClient(api_key='YOUR_API_KEY', data_type='trades', stream_type='throttle', instruments=['PETR4', 'VALE3'])
 ws.run(on_message=lambda message: print(message))
 
 ## The following is optional to keep the program running in a .py file:
@@ -47,7 +47,7 @@ ws.run(on_message=lambda message: print(message))
 ## Example - WebSocket Securities (Derivatives)
 ```python
 import btgsolutions_dataservices as btg
-ws = btg.WebSocketClient(api_key='YOUR_API_KEY', ws_type='securities', feed='stocks', target='realtime')
+ws = btg.MarketDataWebSocketClient(api_key='YOUR_API_KEY', data_type='securities', data_subtype='derivatives')
 ws.run(on_message=lambda message: print(message))
 
 ## The following is optional to keep the program running in a .py file:
@@ -59,7 +59,7 @@ ws.run(on_message=lambda message: print(message))
 ## Example - WebSocket Candles 1S
 ```python
 import btgsolutions_dataservices as btg
-ws = btg.WebSocketClient(api_key='YOUR_API_KEY', ws_type='candles-1S', target='delayed')
+ws = btg.MarketDataWebSocketClient(api_key='YOUR_API_KEY', data_type='candles-1S', stream_type='delayed')
 ws.run(on_message=lambda message: print(message))
 ws.candle_subscribe(list_instruments=['PETR4','VALE3'], candle_type='partial')
 
@@ -74,10 +74,22 @@ ws.candle_subscribe(list_instruments=['PETR4','VALE3'], candle_type='partial')
 # ws.candle_unsubscribe(list_instruments=['PRIO3', 'PETR4'], candle_type='all')
 ```
 
+## Example - WebSocket BMV Trades
+```python
+import btgsolutions_dataservices as btg
+ws = btg.MarketDataWebSocketClient(api_key='YOUR_API_KEY', exchange='bmv', data_type='trades')
+ws.run(on_message=lambda message: print(message))
+
+## The following is optional to keep the program running in a .py file:
+# from time import sleep
+# while True:
+#   sleep(1)
+```
+
 ## Example - WebSocket High Frequency News
 ```python
 import btgsolutions_dataservices as btg
-ws = btg.WebSocketClient(api_key='YOUR_API_KEY', feed='hfn', ws_type='brazil')
+ws = btg.HFNWebSocketClient(api_key='YOUR_API_KEY', country='brazil')
 ws.run(on_message=lambda message: print(message))
 
 ## The following is optional to keep the program running in a .py file:
