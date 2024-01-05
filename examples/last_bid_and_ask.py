@@ -4,20 +4,23 @@ import traceback
 import pandas as pd
 from time import sleep
 
-desired_tickers = ['PETR4', 'VALE3']
+desired_tickers = ['ABEVM138', 'ABEVM141']
 last_bid_and_offer_by_ticker = {}
 
 ws = btg.MarketDataWebSocketClient(
     api_key='YOUR_API_KEY_HERE',
+    stream_type='throttle',
+    exchange='b3',
     data_type='books',
-    feed='stocks',
+    data_subtype='options',
     instruments=desired_tickers
 )
+
 
 def on_message(ws_msg):
     msg = json.loads(ws_msg)
 
-    try: 
+    try:
         if msg["ev"] == "message":
             return
         elif msg["ev"] == "get_last_event":
@@ -26,8 +29,8 @@ def on_message(ws_msg):
             msg = msg["message"]
             msg_ticker = msg["symb"]
             last_bid_and_offer_by_ticker[msg_ticker] = {
-                "bid" : msg["bid"][0]["px"],
-                "ask" : msg["offer"][0]["px"]
+                "bid": msg["bid"][0]["px"],
+                "ask": msg["offer"][0]["px"]
             }
             df = pd.DataFrame().from_dict(last_bid_and_offer_by_ticker).T
             print(df)
@@ -39,8 +42,8 @@ def on_message(ws_msg):
             # NOTE: Comment this "book" if clause if you do not want your dictionary to be updated continuously in realtime
             msg_ticker = msg["symb"]
             last_bid_and_offer_by_ticker[msg_ticker] = {
-                "bid" : msg["bid"][0]["px"],
-                "ask" : msg["offer"][0]["px"]
+                "bid": msg["bid"][0]["px"],
+                "ask": msg["offer"][0]["px"]
             }
             df = pd.DataFrame().from_dict(last_bid_and_offer_by_ticker).T
             print(df)
@@ -49,6 +52,8 @@ def on_message(ws_msg):
         print(msg)
         print(e)
         print(traceback.format_exc())
+
+
 ws.run(on_message=on_message)
 sleep(2)
 

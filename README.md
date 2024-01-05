@@ -9,6 +9,7 @@ pip3 install btgsolutions-dataservices-python-client
 ```
 
 ## Example - WebSocket Books
+
 ```python
 import btgsolutions_dataservices as btg
 ws = btg.MarketDataWebSocketClient(api_key='YOUR_API_KEY', data_type='books', instruments=['PETR4', 'VALE3'])
@@ -19,8 +20,12 @@ ws.run(on_message=lambda message: print(message))
 # while True:
 #   sleep(1)
 
+## Another examples
+# ws.available_to_subscribe()
 ```
+
 ## Example - WebSocket Trades Delayed
+
 ```python
 import btgsolutions_dataservices as btg
 ws = btg.MarketDataWebSocketClient(api_key='YOUR_API_KEY', data_type='trades', stream_type='delayed', instruments=['PETR4', 'VALE3'])
@@ -31,8 +36,12 @@ ws.run(on_message=lambda message: print(message))
 # while True:
 #   sleep(1)
 
+## Another examples
+# ws.available_to_subscribe()
 ```
+
 ## Example - WebSocket Trades with 1 second throttle
+
 ```python
 import btgsolutions_dataservices as btg
 ws = btg.MarketDataWebSocketClient(api_key='YOUR_API_KEY', data_type='trades', stream_type='throttle', instruments=['PETR4', 'VALE3'])
@@ -42,9 +51,13 @@ ws.run(on_message=lambda message: print(message))
 # from time import sleep
 # while True:
 #   sleep(1)
+
+## Another examples
+# ws.available_to_subscribe()
 ```
 
 ## Example - WebSocket Securities (Derivatives)
+
 ```python
 import btgsolutions_dataservices as btg
 ws = btg.MarketDataWebSocketClient(api_key='YOUR_API_KEY', data_type='securities', data_subtype='derivatives')
@@ -57,6 +70,7 @@ ws.run(on_message=lambda message: print(message))
 ```
 
 ## Example - WebSocket Candles 1S
+
 ```python
 import btgsolutions_dataservices as btg
 ws = btg.MarketDataWebSocketClient(api_key='YOUR_API_KEY', data_type='candles-1S', stream_type='delayed')
@@ -75,6 +89,7 @@ ws.candle_subscribe(list_instruments=['PETR4','VALE3'], candle_type='partial')
 ```
 
 ## Example - WebSocket BMV Trades
+
 ```python
 import btgsolutions_dataservices as btg
 ws = btg.MarketDataWebSocketClient(api_key='YOUR_API_KEY', exchange='bmv', data_type='trades')
@@ -87,6 +102,7 @@ ws.run(on_message=lambda message: print(message))
 ```
 
 ## Example - WebSocket High Frequency News
+
 ```python
 import btgsolutions_dataservices as btg
 ws = btg.HFNWebSocketClient(api_key='YOUR_API_KEY', country='brazil')
@@ -99,6 +115,7 @@ ws.run(on_message=lambda message: print(message))
 ```
 
 ## Example - IntradayCandles
+
 ```python
 import btgsolutions_dataservices as btg
 int_candles = btg.IntradayCandles(api_key='YOUR_API_KEY')
@@ -106,6 +123,7 @@ int_candles.get_intraday_candles(market_type='stocks', tickers=['PETR4', 'VALE3'
 ```
 
 ## Example - Get Interday History Candles
+
 ```python
 import btgsolutions_dataservices as btg
 hist_candles = btg.HistoricalCandles(api_key='YOUR_API_KEY')
@@ -113,6 +131,7 @@ hist_candles.get_interday_history_candles(ticker='PETR4',  market_type='stocks',
 ```
 
 ## Example - Get Intraday History Candles
+
 ```python
 import btgsolutions_dataservices as btg
 hist_candles = btg.HistoricalCandles(api_key='YOUR_API_KEY')
@@ -120,6 +139,7 @@ hist_candles.get_intraday_history_candles(ticker='PETR4',  market_type='stocks',
 ```
 
 ## Example - Plot History Candles
+
 ```python
 import btgsolutions_dataservices as btg
 hist_candles = btg.HistoricalCandles(api_key='YOUR_API_KEY')
@@ -127,6 +147,7 @@ hist_candles.get_intraday_history_candles(ticker='PETR4',  market_type='stocks',
 ```
 
 ## Example - Quotes
+
 ```python
 import btgsolutions_dataservices as btg
 quotes = btg.Quotes(api_key='YOUR_API_KEY')
@@ -134,6 +155,7 @@ quotes.get_quote(market_type = 'stocks', tickers = ['PETR4', 'VALE3'])
 ```
 
 ## Example - BulkData
+
 ```python
 import btgsolutions_dataservices as btg
 bulk_data = btg.BulkData(api_key='YOUR_API_KEY')
@@ -141,6 +163,7 @@ bulk_data.get_data(ticker='PETR4', date='2023-07-03', data_type='trades')
 ```
 
 ## Example - Intraday Tick Data
+
 ```python
 import btgsolutions_dataservices as btg
 intra_tickdata = btg.IntradayTickData(api_key='YOUR_API_KEY')
@@ -148,6 +171,7 @@ intra_tickdata.get_trades(ticker='PETR4')
 ```
 
 ## Example - HighFrequencyNews
+
 ```python
 import btgsolutions_dataservices as btg
 hfn = btg.HighFrequencyNews(api_key='YOUR_API_KEY')
@@ -155,4 +179,5 @@ hfn.latest_news()
 ```
 
 ## Documentation
+
 The official documentation is hosted at https://python-client-docs.dataservices.btgpactualsolutions.com/
