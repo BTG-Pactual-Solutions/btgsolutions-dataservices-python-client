@@ -1,9 +1,10 @@
-### WebSocket
+# WebSocket
 MAX_WS_RECONNECT_RETRIES = 5
 
 REALTIME = 'realtime'
 DELAYED = 'delayed'
 THROTTLE = 'throttle'
+PROCESSED = 'processed'
 
 BR = 'brazil'
 MX = 'mexico'
@@ -14,6 +15,7 @@ BMV = 'bmv'
 
 SECURITIES = 'securities'
 TRADES = 'trades'
+PROCESSEDTRADES = 'processed-trades'
 BOOKS = 'books'
 INDICES = 'indices'
 CANDLES1S = 'candles-1S'
@@ -28,7 +30,8 @@ DERIVATIVES = 'derivatives'
 VALID_STREAM_TYPES = [REALTIME, DELAYED, THROTTLE]
 VALID_COUNTRIES = [BR, MX, CL]
 VALID_EXCHANGES = [B3, BMV]
-VALID_MARKET_DATA_TYPES = [SECURITIES, TRADES, BOOKS, INDICES, CANDLES1S, CANDLES1M, STOPLOSS]
+VALID_MARKET_DATA_TYPES = [SECURITIES, TRADES, PROCESSEDTRADES,
+                           BOOKS, INDICES, CANDLES1S, CANDLES1M, STOPLOSS]
 VALID_MARKET_DATA_SUBTYPES = [ALL, STOCKS, OPTIONS, DERIVATIVES]
 
 market_data_socket_urls = {
@@ -48,6 +51,13 @@ market_data_socket_urls = {
                 STOCKS: f"wss://dataservices.btgpactualsolutions.com/stream/v2/marketdata/{THROTTLE}/trade/{STOCKS}",
                 OPTIONS: f"wss://dataservices.btgpactualsolutions.com/stream/v2/marketdata/{THROTTLE}/trade/{OPTIONS}",
                 DERIVATIVES: f"wss://dataservices.btgpactualsolutions.com/stream/v2/marketdata/{THROTTLE}/trade/{DERIVATIVES}",
+            },
+        },
+        PROCESSEDTRADES: {
+            REALTIME: {
+                STOCKS: f'wss://dataservices.btgpactualsolutions.com/stream/v2/marketdata/{PROCESSED}/trade/{STOCKS}',
+                OPTIONS: f'wss://dataservices.btgpactualsolutions.com/stream/v2/marketdata/{PROCESSED}/trade/{OPTIONS}',
+                DERIVATIVES: f'wss://dataservices.btgpactualsolutions.com/stream/v2/marketdata/{PROCESSED}/trade/{DERIVATIVES}',
             },
         },
         BOOKS: {
@@ -114,7 +124,7 @@ hfn_socket_urls = {
     },
 }
 
-### Rest
+# Rest
 url_apis = "https://dataservices.btgpactualsolutions.com/api/v2"
 url_api_v1 = "https://dataservices.btgpactualsolutions.com/api/v1"
 url_apis_v3 = "https://dataservices.btgpactualsolutions.com/api/v3"

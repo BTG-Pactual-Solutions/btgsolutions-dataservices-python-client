@@ -4,10 +4,11 @@ from ..exceptions import WSTypeError, DelayedError, FeedError
 from ..rest import Authenticator
 from ..config import market_data_socket_urls, MAX_WS_RECONNECT_RETRIES, VALID_STREAM_TYPES, VALID_EXCHANGES, VALID_MARKET_DATA_TYPES, VALID_MARKET_DATA_SUBTYPES, REALTIME, B3, TRADES, INDICES, ALL, STOCKS
 from .websocket_default_functions import _on_open, _on_message, _on_error, _on_close
-import websocket 
+import websocket
 import json
 import ssl
 import threading
+
 
 class MarketDataWebSocketClient:
     """
@@ -48,9 +49,9 @@ class MarketDataWebSocketClient:
 
     data_type: str
         Market Data type.
-        Options: 'trades', 'books', 'indices', 'securities', 'stoploss', 'candles-1S', 'candles-1M'.
+        Options: 'trades', 'processed-trades', 'books', 'indices', 'securities', 'stoploss', 'candles-1S', 'candles-1M'.
         Field is not required. Default: 'trades'.
-    
+
     data_subtype: str
         Market Data subtype (when applicable).
         Options: 'stocks', 'options', 'derivatives'.
@@ -64,15 +65,16 @@ class MarketDataWebSocketClient:
         Enable or disable ssl configuration.
         Field is not required. Default: True (enable).
     """
+
     def __init__(
         self,
-        api_key:str,
-        stream_type:Optional[str] = REALTIME,
-        exchange:Optional[str] = B3,
-        data_type:Optional[str] = TRADES,
-        data_subtype:Optional[str] = None,
-        instruments:Optional[List[str]] = [],
-        ssl:Optional[bool] = True,
+        api_key: str,
+        stream_type: Optional[str] = REALTIME,
+        exchange: Optional[str] = B3,
+        data_type: Optional[str] = TRADES,
+        data_subtype: Optional[str] = None,
+        instruments: Optional[List[str]] = [],
+        ssl: Optional[bool] = True,
         **kwargs,
     ):
         self.api_key = api_key
@@ -89,29 +91,35 @@ class MarketDataWebSocketClient:
                 data_subtype = ALL
 
         if stream_type not in VALID_STREAM_TYPES:
-            raise FeedError(f"Must provide a valid 'stream_type' parameter. Valid options are: {VALID_STREAM_TYPES}")
+            raise FeedError(
+                f"Must provide a valid 'stream_type' parameter. Valid options are: {VALID_STREAM_TYPES}")
         if exchange not in VALID_EXCHANGES:
-            raise FeedError(f"Must provide a valid 'exchange' parameter. Valid options are: {VALID_EXCHANGES}")
+            raise FeedError(
+                f"Must provide a valid 'exchange' parameter. Valid options are: {VALID_EXCHANGES}")
         if exchange not in VALID_EXCHANGES:
-            raise FeedError(f"Must provide a valid 'exchange' parameter. Valid options are: {VALID_EXCHANGES}")
+            raise FeedError(
+                f"Must provide a valid 'exchange' parameter. Valid options are: {VALID_EXCHANGES}")
         if data_type not in VALID_MARKET_DATA_TYPES:
-            raise FeedError(f"Must provide a valid 'data_type' parameter. Valid options are: {VALID_MARKET_DATA_TYPES}")
+            raise FeedError(
+                f"Must provide a valid 'data_type' parameter. Valid options are: {VALID_MARKET_DATA_TYPES}")
         if data_subtype not in VALID_MARKET_DATA_SUBTYPES:
-            raise FeedError(f"Must provide a valid 'data_subtype' parameter. Valid options are: {VALID_MARKET_DATA_SUBTYPES}")
+            raise FeedError(
+                f"Must provide a valid 'data_subtype' parameter. Valid options are: {VALID_MARKET_DATA_SUBTYPES}")
 
         try:
             self.url = market_data_socket_urls[exchange][data_type][stream_type][data_subtype]
         except:
-            raise WSTypeError(f"There is no WebSocket type for your specifications (stream_type:{stream_type}, exchange:{exchange}, data_type:{data_type}, data_subtype:{data_subtype})\nPlease check your request parameters and try again")
-            
+            raise WSTypeError(
+                f"There is no WebSocket type for your specifications (stream_type:{stream_type}, exchange:{exchange}, data_type:{data_type}, data_subtype:{data_subtype})\nPlease check your request parameters and try again")
+
         self.websocket_cfg = kwargs
-    
+
     def run(
         self,
-        on_open = None,
-        on_message = None,
-        on_error = None,
-        on_close = None,
+        on_open=None,
+        on_message=None,
+        on_error=None,
+        on_close=None,
         reconnect=True
     ):
         """
@@ -123,7 +131,7 @@ class MarketDataWebSocketClient:
             - Called at opening connection to websocket.
             - Field is not required. 
             - Default: prints that the connection was opened in case of success.
-        
+
         on_message: function
             - Called every time it receives a message.
             - Arguments:
@@ -173,13 +181,14 @@ class MarketDataWebSocketClient:
 
         def intermediary_on_close(ws, close_status_code, close_msg):
             on_close(close_status_code, close_msg)
-            
+
             if reconnect:
                 if self.__nro_reconnect_retries == MAX_WS_RECONNECT_RETRIES:
                     print(f"### Fail retriyng reconnect")
                     return
-                self.__nro_reconnect_retries +=1
-                print(f"### Reconnecting.... Attempts: {self.__nro_reconnect_retries}/{MAX_WS_RECONNECT_RETRIES}")
+                self.__nro_reconnect_retries += 1
+                print(
+                    f"### Reconnecting.... Attempts: {self.__nro_reconnect_retries}/{MAX_WS_RECONNECT_RETRIES}")
                 self.run(on_open, on_message, on_error, on_close, reconnect)
 
         self.ws = websocket.WebSocketApp(
@@ -204,10 +213,10 @@ class MarketDataWebSocketClient:
         Class method to be used internally. Sends data to websocket.
         """
         if not isinstance(data, str):
-            data = json.dumps(data)   
+            data = json.dumps(data)
         print(f'Sending data: {data}')
         return self.ws.send(data)
-    
+
     def close(self):
         """
         Closes connection with websocket.
@@ -223,8 +232,9 @@ class MarketDataWebSocketClient:
         list_instruments: list
             Field is required.
         """
-        self.__send({'action':'subscribe', 'params': list_instruments})
-        print(f'Socket subscribed the following instrument(s): {list_instruments}')
+        self.__send({'action': 'subscribe', 'params': list_instruments})
+        print(
+            f'Socket subscribed the following instrument(s): {list_instruments}')
 
     def unsubscribe(self, list_instruments):
         """
@@ -235,20 +245,21 @@ class MarketDataWebSocketClient:
         list_instruments: list
             Field is required.
         """
-        self.__send({'action':'unsubscribe', 'params': list_instruments})
-        print(f'Socket subscribed the following instrument(s): {list_instruments}')
+        self.__send({'action': 'unsubscribe', 'params': list_instruments})
+        print(
+            f'Socket subscribed the following instrument(s): {list_instruments}')
 
     def subscribed_to(self):
         """
         Return client subscribed tickers.
         """
-        self.__send({'action':'subscribed_to'})
+        self.__send({'action': 'subscribed_to'})
 
     def available_to_subscribe(self):
         """
         Return avaiable tickers to subscribe.
         """
-        self.__send({'action':'available_to_subscribe'})
+        self.__send({'action': 'available_to_subscribe'})
 
     def notify_stoploss(self, instrument_params):
         """
@@ -259,21 +270,21 @@ class MarketDataWebSocketClient:
         instrument_params: dict
             Field is required.
         """
-        self.__send({'action':'notify_stoploss', 'params': instrument_params})
+        self.__send({'action': 'notify_stoploss', 'params': instrument_params})
 
     def stoploss_status(self):
         """
         Return client stop loss status.
         """
-        self.__send({'action':'stoploss_status'})
+        self.__send({'action': 'stoploss_status'})
 
     def clear_stoploss(self):
         """
         Clears client stop loss notifications.
         """
-        self.__send({'action':'clear_stoploss'})
+        self.__send({'action': 'clear_stoploss'})
 
-    def get_last_event(self, ticker:str):
+    def get_last_event(self, ticker: str):
         """
         Get the last event for the provided ticker.
 
@@ -282,9 +293,9 @@ class MarketDataWebSocketClient:
         ticker: str
             Field is required.
         """
-        self.__send({'action':'get_last_event', 'params': ticker})
+        self.__send({'action': 'get_last_event', 'params': ticker})
 
-    def candle_subscribe(self, list_instruments:list, candle_type:str):
+    def candle_subscribe(self, list_instruments: list, candle_type: str):
         """
         Subscribes a list of instruments, for partial/closed candle updates.
 
@@ -295,10 +306,12 @@ class MarketDataWebSocketClient:
         candle_type: str
             Field is required.
         """
-        self.__send({'action':'subscribe', 'params': list_instruments, 'type':candle_type})
-        print(f'Socket subscribed the following instrument(s): {list_instruments}')
+        self.__send(
+            {'action': 'subscribe', 'params': list_instruments, 'type': candle_type})
+        print(
+            f'Socket subscribed the following instrument(s): {list_instruments}')
 
-    def candle_unsubscribe(self, list_instruments:list, candle_type:str):
+    def candle_unsubscribe(self, list_instruments: list, candle_type: str):
         """
         Unsubscribes a list of instruments, for partial/closed candle updates.
 
@@ -309,5 +322,7 @@ class MarketDataWebSocketClient:
         candle_type: str
             Field is required.
         """
-        self.__send({'action':'unsubscribe', 'params': list_instruments, 'type':candle_type})
-        print(f'Socket unsubscribed the following instrument(s): {list_instruments}')
+        self.__send({'action': 'unsubscribe',
+                    'params': list_instruments, 'type': candle_type})
+        print(
+            f'Socket unsubscribed the following instrument(s): {list_instruments}')
