@@ -73,7 +73,7 @@ ws.run(on_message=lambda message: print(message))
 
 ```python
 import btgsolutions_dataservices as btg
-ws = btg.MarketDataWebSocketClient(api_key='YOUR_API_KEY', data_type='candles-1S', stream_type='delayed')
+ws = btg.MarketDataWebSocketClient(api_key='YOUR_API_KEY', data_type='candles-1S', stream_type='realtime')
 ws.run(on_message=lambda message: print(message))
 ws.candle_subscribe(list_instruments=['PETR4','VALE3'], candle_type='partial')
 

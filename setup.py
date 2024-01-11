@@ -22,7 +22,7 @@ description = "Python package containing several classes and data for extracting
 
 setup(
     name='btgsolutions-dataservices-python-client',
-    version='1.0.3',
+    version='1.0.4',
     description=description,
     long_description=long_description,
     long_description_content_type='text/markdown',

@@ -208,6 +208,11 @@ class MarketDataWebSocketClient:
         wst.daemon = True
         wst.start()
 
+        while True:
+            if self.ws.sock is not None and self.ws.sock.connected:
+                break
+            pass
+
     def __send(self, data):
         """
         Class method to be used internally. Sends data to websocket.
