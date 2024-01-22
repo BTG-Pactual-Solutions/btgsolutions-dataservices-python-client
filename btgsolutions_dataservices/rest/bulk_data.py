@@ -39,6 +39,38 @@ class BulkData:
         self.token = Authenticator(self.api_key).token
         self.headers = {"authorization": f"authorization {self.token}"}
 
+    def get_available_tickers(
+        self,
+        date:str,
+        data_type:str,
+        prefix:str=''
+    ):  
+        """
+        This method provides all tickers available for query, for the provided market data type.
+
+        Parameters
+        ----------------
+        date: str
+            Date period.
+            Field is required.
+            Format: 'YYYY-MM-DD'.
+            Example: '2023-07-03'.
+        data_type: str
+            Market data type.
+            Field is required.
+            Example: 'trades', 'trades-rlp' or 'books'.
+        prefix: str
+            Filters tickers starting with the prefix.
+            Field is optional.
+            Example: 'DOL'.
+        """
+        url = f"{url_api_v1}/marketdata/bulkdata/available-tickers?date={date}&data_type={data_type}&prefix={prefix}"
+        response = requests.request("GET", url,  headers=self.headers)
+
+        response_json = response.json()
+        if response.status_code == 200: return response_json['tickers']
+        raise BadResponse(f'Error: {response_json.get("ApiClientError", "")}.\n{response_json.get("SuggestedAction", "")}')
+
     def get_data(
         self,
         ticker:str,
