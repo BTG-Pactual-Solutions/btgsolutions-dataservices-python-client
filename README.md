@@ -166,6 +166,7 @@ bulk_data.get_available_tickers(date='2023-07-03', data_type='trades', prefix='P
 import btgsolutions_dataservices as btg
 bulk_data = btg.BulkData(api_key='YOUR_API_KEY')
 bulk_data.get_data(ticker='PETR4', date='2023-07-03', data_type='trades')
+# bulk_data.get_data(ticker='PETR4', date='2024-01-22', data_type='book-events')
 ```
 
 ## Example - Intraday Tick Data
