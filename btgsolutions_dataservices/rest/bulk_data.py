@@ -8,6 +8,31 @@ import pandas as pd
 from io import BytesIO
 import pyarrow.parquet as pq
 
+def download_compressed_file(url, headers):
+    
+    with requests.get(url, headers=headers, stream=True) as response:
+        response.raise_for_status()
+
+        try:
+            file_name = response.headers.get('content-disposition').split('filename=')[1]
+        except:
+            file_name = "compressed_file.tar.gz"
+        
+        total_length = response.headers.get('content-length')
+        if total_length is not None:
+            total_length = int(total_length)
+            bytes_downloaded = 0
+
+        with open(file_name, 'wb') as file:
+            for chunk in response.iter_content(chunk_size=8192):
+                if chunk:
+                    file.write(chunk)
+                    if total_length is not None:
+                        bytes_downloaded += len(chunk)
+                        print(f"Downloaded: {bytes_downloaded / total_length * 100:.2f}%", end='\r')
+
+    print("\nDownload completed")
+
 class BulkData:
     """
     This class provides market data by ticker and date, in .csv format
@@ -70,6 +95,54 @@ class BulkData:
         response_json = response.json()
         if response.status_code == 200: return response_json['tickers']
         raise BadResponse(f'Error: {response_json.get("ApiClientError", "")}.\n{response_json.get("SuggestedAction", "")}')
+
+    def get_market_data_channels(
+        self,
+        date:str,
+    ):
+        """
+        This method provides all the available market data channels for a given date.
+
+        Parameters
+        ----------------
+        date: str
+            Date period.
+            Field is required.
+            Format: 'YYYY-MM-DD'. Example: '2023-07-03', '2023-07-28'.
+        """
+        url = f"{url_api_v1}/marketdata/bulkdata/channels?date={date}"
+
+        response = requests.request("GET", url,  headers=self.headers)
+        if response.status_code == 200:
+            return response.json()
+        else:
+            response = json.loads(response.text)
+            raise BadResponse(f'Error: {response.get("ApiClientError", "")}.\n{response.get("SuggestedAction", "")}')
+
+    def get_compressed_data(
+        self,
+        channel:str,
+        date:str,
+        data_type:str='instruments'
+    ):
+        """
+        This method provides market data via compressed files (instruments, snapshot, incremental) for a given channel and date.
+
+        Parameters
+        ----------------
+        channel: str
+            Market Data channel.
+            Field is required. Example: '001'.
+        date: str
+            Date period.
+            Field is required.
+            Format: 'YYYY-MM-DD'. Example: '2023-07-03', '2023-07-28'.
+        data_type: str
+            Market data type.
+            Field is required. Example: 'instruments', 'snapshot', 'incremental'.
+        """
+        url = f"{url_api_v1}/marketdata/bulkdata/compressed/{data_type}?channel={channel}&date={date}"
+        download_compressed_file(url, headers=self.headers)
 
     def get_data(
         self,
