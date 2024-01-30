@@ -1,3 +1,4 @@
+import os
 from typing import Optional
 from ..exceptions import BadResponse
 import requests
@@ -31,7 +32,8 @@ def download_compressed_file(url, headers):
                         bytes_downloaded += len(chunk)
                         print(f"Downloaded: {bytes_downloaded / total_length * 100:.2f}%", end='\r')
 
-    print("\nDownload completed")
+    current_dir_name = os.getcwd()
+    print(f"\nDownload completed. File path: '{current_dir_name}/{file_name}'")
 
 class BulkData:
     """
@@ -101,7 +103,7 @@ class BulkData:
         date:str,
     ):
         """
-        This method provides all the available market data channels for a given date.
+        This method provides all the available market data channels for a given date. For more detailed information about market data channels, please consult our documentation, at https://dataservicesdocs.btgpactualsolutions.com/home > Data Specs > Market Data channel definition.
 
         Parameters
         ----------------
@@ -126,7 +128,7 @@ class BulkData:
         data_type:str='instruments'
     ):
         """
-        This method provides market data via compressed files (instruments, snapshot, incremental) for a given channel and date.
+        This method provides market data via compressed files (instruments, snapshot, incremental) for a given market data channel and date. Function get_market_data_channels provides all the available channels for a given date.
 
         Parameters
         ----------------

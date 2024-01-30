@@ -169,13 +169,20 @@ bulk_data.get_data(ticker='PETR4', date='2023-07-03', data_type='trades')
 # bulk_data.get_data(ticker='PETR4', date='2024-01-22', data_type='book-events')
 ```
 
-## Example BulkData - Get Compressed Data
+## Example BulkData - Get Market Data Channels
+```python
+import btgsolutions_dataservices as btg
+bulk_data = btg.BulkData(api_key='YOUR_API_KEY')
+bulk_data.get_market_data_channels(date='2024-01-03')
+```
+
+## Example BulkData - Get Compressed Data (PCAP files)
 ```python
 import btgsolutions_dataservices as btg
 bulk_data = btg.BulkData(api_key='YOUR_API_KEY')
 bulk_data.get_compressed_data(channel='001', date='2024-01-03', data_type='instruments')
-# bulk_data.get_compressed_data(channel='053', date='2023-01-03', data_type='incremental')
-# bulk_data.get_compressed_data(channel='051', date='2023-01-03', data_type='snapshot')
+# bulk_data.get_compressed_data(channel='053', date='2024-01-03', data_type='incremental')
+# bulk_data.get_compressed_data(channel='051', date='2024-01-03', data_type='snapshot')
 ```
 
 ## Example - Intraday Tick Data
