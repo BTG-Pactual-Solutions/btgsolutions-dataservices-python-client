@@ -125,7 +125,8 @@ class BulkData:
         self,
         channel:str,
         date:str,
-        data_type:str='instruments'
+        data_type:str='instruments',
+        binary:bool=False
     ):
         """
         This method provides market data via compressed files (instruments, snapshot, incremental) for a given market data channel and date. Function get_market_data_channels provides all the available channels for a given date.
@@ -142,8 +143,11 @@ class BulkData:
         data_type: str
             Market data type.
             Field is required. Example: 'instruments', 'snapshot', 'incremental'.
+        binary: bool
+            If true, returns binary data. If false, returns FIX/FAST data.
+            Field is not required. Default: false.
         """
-        url = f"{url_api_v1}/marketdata/bulkdata/compressed/{data_type}?channel={channel}&date={date}"
+        url = f"{url_api_v1}/marketdata/bulkdata/compressed/{data_type}?channel={channel}&date={date}&binary={binary}"
         download_compressed_file(url, headers=self.headers)
 
     def get_data(
@@ -168,7 +172,7 @@ class BulkData:
             Format: 'YYYY-MM-DD'. Example: '2023-07-03', '2023-07-28'.
         data_type: str
             Market data type.
-            Field is required. Example: 'trades', 'trades-rlp', 'books'.
+            Field is required. Example: 'trades', 'trades-rlp', 'books', 'book-events' or 'auction-times'.
         n: int
             Book depth.
             Field is not required. Default: 10. N must be an integer between 1 and 50, boundaries included.
