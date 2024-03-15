@@ -154,6 +154,14 @@ quotes = btg.Quotes(api_key='YOUR_API_KEY')
 quotes.get_quote(market_type = 'stocks', tickers = ['PETR4', 'VALE3'])
 ```
 
+## Example - Ticker Last Event
+
+```python
+import btgsolutions_dataservices as btg
+last_event = btg.TickerLastEvent(api_key='YOUR_API_KEY')
+last_event.get_trades(data_type='equities', ticker='VALE3')
+```
+
 ## Example BulkData - Available Tickers
 ```python
 import btgsolutions_dataservices as btg
