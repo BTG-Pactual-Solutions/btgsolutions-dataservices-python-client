@@ -22,7 +22,7 @@ description = "Python package containing several classes and data for extracting
 
 setup(
     name='btgsolutions-dataservices-python-client',
-    version='1.0.9',
+    version='1.0.10',
     description=description,
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -30,5 +30,5 @@ setup(
     packages=find_packages(),
     url="https://github.com/BTG-Pactual-Solutions/btgsolutions-dataservices-python-client",
     install_requires=install_requires,
-    python_requires=">=3.7",
+    python_requires=">=3.7,<3.12",
 )
