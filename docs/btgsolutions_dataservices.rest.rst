@@ -20,6 +20,14 @@ btgsolutions\_dataservices.rest.bulk\_data module
    :undoc-members:
    :show-inheritance:
 
+btgsolutions\_dataservices.rest.hfn module
+------------------------------------------
+
+.. automodule:: btgsolutions_dataservices.rest.hfn
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 btgsolutions\_dataservices.rest.historical\_candles module
 ----------------------------------------------------------
 
@@ -32,6 +40,30 @@ btgsolutions\_dataservices.rest.intraday\_candles module
 --------------------------------------------------------
 
 .. automodule:: btgsolutions_dataservices.rest.intraday_candles
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+btgsolutions\_dataservices.rest.intraday\_tick\_data module
+-----------------------------------------------------------
+
+.. automodule:: btgsolutions_dataservices.rest.intraday_tick_data
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+btgsolutions\_dataservices.rest.quotes module
+---------------------------------------------
+
+.. automodule:: btgsolutions_dataservices.rest.quotes
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+btgsolutions\_dataservices.rest.ticker\_last\_event module
+----------------------------------------------------------
+
+.. automodule:: btgsolutions_dataservices.rest.ticker_last_event
    :members:
    :undoc-members:
    :show-inheritance:

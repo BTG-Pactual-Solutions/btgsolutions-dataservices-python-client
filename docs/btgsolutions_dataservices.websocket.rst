@@ -4,10 +4,18 @@ btgsolutions\_dataservices.websocket package
 Submodules
 ----------
 
-btgsolutions\_dataservices.websocket.websocket\_client module
--------------------------------------------------------------
+btgsolutions\_dataservices.websocket.hfn\_websocket\_client module
+------------------------------------------------------------------
 
-.. automodule:: btgsolutions_dataservices.websocket.websocket_client
+.. automodule:: btgsolutions_dataservices.websocket.hfn_websocket_client
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+btgsolutions\_dataservices.websocket.market\_data\_websocket\_client module
+---------------------------------------------------------------------------
+
+.. automodule:: btgsolutions_dataservices.websocket.market_data_websocket_client
    :members:
    :undoc-members:
    :show-inheritance:
