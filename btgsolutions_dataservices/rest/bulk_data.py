@@ -2,7 +2,7 @@ import os
 from typing import Optional
 from ..exceptions import BadResponse
 import requests
-from ..config import url_api_v1
+from ..config import url_api_v1, url_apis
 from .authenticator import Authenticator
 import json
 import pandas as pd
@@ -51,6 +51,11 @@ class BulkData:
     >>>     data_type = 'trades',
     >>>     raw_data = False
     >>> )
+    >>> bulk_data.get_data_v2(
+    >>>     ticker = 'PETR4',
+    >>>     date = '2024-04-01',
+    >>>     raw_data = False
+    >>> )
 
     Parameters
     ----------------
@@ -65,6 +70,54 @@ class BulkData:
         self.api_key = api_key
         self.token = Authenticator(self.api_key).token
         self.headers = {"authorization": f"authorization {self.token}"}
+
+    def get_data_v2(
+        self,
+        ticker:str,
+        date:str,
+        raw_data:bool=False
+    ):
+        """
+        Get all ticker market data (trades & book events), for a given date.
+
+        Parameters
+        ----------------
+        ticker: str
+            Ticker symbol.
+            Field is required. Example: 'PETR4'.
+        date: str
+            Date.
+            Field is required.
+            Format: 'YYYY-MM-DD'. Example: '2023-07-03', '2023-07-28'.
+        raw_data: bool
+            If false, returns data in a dataframe. If true, returns raw data.
+            Field is not required. Default: False.
+        """     
+        url = f"{url_apis}/marketdata/bulkdata/raw?ticker={ticker}&date={date}"
+
+        response = requests.request("GET", url,  headers=self.headers)
+        if response.status_code == 200:
+            try:
+
+                if raw_data == False:
+                    parquet_buffer = BytesIO(response.content)
+                    parquet_file = pq.ParquetFile(parquet_buffer)
+
+                    df = parquet_file.read().to_pandas()
+                    return df
+                else:
+                    content_disposition = response.headers.get('Content-Disposition', '')
+                    filename = content_disposition.split('filename=')[1]
+
+                    with open(filename, 'wb') as file:
+                        file.write(response.content)
+                    return None
+            except Exception as e:
+                print(f'error while trying to retrieve file:\n{e}')
+                return None
+
+        response = json.loads(response.text)
+        raise BadResponse(f'Error: {response.get("ApiClientError", "")}.\n{response.get("SuggestedAction", "")}')
 
     def get_available_tickers(
         self,
