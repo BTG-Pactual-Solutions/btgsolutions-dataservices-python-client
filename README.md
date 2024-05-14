@@ -101,6 +101,22 @@ ws.run(on_message=lambda message: print(message))
 #   sleep(1)
 ```
 
+## Example - WebSocket Books (without spawning a new thread for incoming server messages)
+
+```python
+import btgsolutions_dataservices as btg
+ws = btg.MarketDataWebSocketClient(api_key='YOUR_API_KEY', data_type='books', instruments=['PETR4', 'VALE3'])
+ws.run(on_message=lambda message: print(message), spawn_thread=False)
+
+## The following is optional to keep the program running in a .py file:
+# from time import sleep
+# while True:
+#   sleep(1)
+
+## Another examples
+# ws.available_to_subscribe()
+```
+
 ## Example - WebSocket High Frequency News
 
 ```python

@@ -120,7 +120,8 @@ class MarketDataWebSocketClient:
         on_message=None,
         on_error=None,
         on_close=None,
-        reconnect=True
+        reconnect=True,
+        spawn_thread:bool=True,
     ):
         """
         Initializes a connection to websocket and subscribes to the instruments, if it was passed in the class initialization.
@@ -157,6 +158,10 @@ class MarketDataWebSocketClient:
             Try reconnect if connection is closed.
             Field is not required.
             Default: True.
+        spawn_thread: bool
+            Spawn a new thread for incoming server messages (on_message callback function)
+            Field is not required.
+            Default: True.
         """
         if on_open is None:
             on_open = _on_open
@@ -176,6 +181,11 @@ class MarketDataWebSocketClient:
         def intermediary_on_message(ws, data):
             on_message(data)
 
+        def new_thread_intermediary_on_message(ws, data):
+            def run(*args):
+                on_message(data)
+            threading.Thread(target=run).start()
+
         def intermediary_on_error(ws, error):
             on_error(error)
 
@@ -191,10 +201,16 @@ class MarketDataWebSocketClient:
                     f"### Reconnecting.... Attempts: {self.__nro_reconnect_retries}/{MAX_WS_RECONNECT_RETRIES}")
                 self.run(on_open, on_message, on_error, on_close, reconnect)
 
+        if spawn_thread:
+            print('on_message callback function running on a new thread')
+            on_message_callback = new_thread_intermediary_on_message
+        else:
+            on_message_callback = intermediary_on_message
+
         self.ws = websocket.WebSocketApp(
             url=self.url,
             on_open=intermediary_on_open,
-            on_message=intermediary_on_message,
+            on_message=on_message_callback,
             on_error=intermediary_on_error,
             on_close=intermediary_on_close,
             header={
