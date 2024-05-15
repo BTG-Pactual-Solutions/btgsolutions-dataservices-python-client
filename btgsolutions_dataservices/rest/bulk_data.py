@@ -93,7 +93,7 @@ class BulkData:
             If false, returns data in a dataframe. If true, returns raw data.
             Field is not required. Default: False.
         """     
-        url = f"{url_apis}/marketdata/bulkdata/raw?ticker={ticker}&date={date}"
+        url = f"{url_apis}/marketdata/bulkdata/trades-and-book-events?ticker={ticker}&date={date}"
 
         response = requests.request("GET", url,  headers=self.headers)
         if response.status_code == 200:
