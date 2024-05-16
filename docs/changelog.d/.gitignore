@@ -1,0 +1,7 @@
+# The following logic adds everything inside this folder to “ignore” but then allows .gitignore, README.rst and any RST documents matching Towncrier change note fragment naming convention.
+*
+
+!.gitignore
+!.towncrier-template.rst.j2
+!*.*.rst
+!README.rst

@@ -11,6 +11,7 @@ Welcome to BTG Solutions - Data Services's documentation!
    :caption: Contents:
 
    modules
+   changelog
 
 
 Indices and tables

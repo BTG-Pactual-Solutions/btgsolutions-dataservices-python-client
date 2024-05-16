@@ -30,7 +30,8 @@ author = 'BTG Solutions Data Services powered by BTG Pactual Solutions'
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.viewcode',
-    'sphinx.ext.napoleon'
+    'sphinx.ext.napoleon',
+    'sphinx_changelog',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
