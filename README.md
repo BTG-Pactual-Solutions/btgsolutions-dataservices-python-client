@@ -178,13 +178,6 @@ last_event = btg.TickerLastEvent(api_key='YOUR_API_KEY')
 last_event.get_trades(data_type='equities', ticker='VALE3')
 ```
 
-## Example BulkData V2 - Get Ticker Market Data (Trades & Book Events)
-```python
-import btgsolutions_dataservices as btg
-bulk_data = btg.BulkData(api_key='YOUR_API_KEY')
-bulk_data.get_data_v2(ticker='PETR4', date='2024-04-01')
-```
-
 ## Example BulkData - Available Tickers
 ```python
 import btgsolutions_dataservices as btg
@@ -198,6 +191,7 @@ import btgsolutions_dataservices as btg
 bulk_data = btg.BulkData(api_key='YOUR_API_KEY')
 bulk_data.get_data(ticker='PETR4', date='2023-07-03', data_type='trades')
 # bulk_data.get_data(ticker='PETR4', date='2024-01-22', data_type='book-events')
+# bulk_data.get_data(ticker='VALE3', date='2024-04-01', data_type='trades-and-book-events')
 ```
 
 ## Example BulkData - Get Market Data Channels

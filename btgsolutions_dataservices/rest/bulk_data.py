@@ -51,11 +51,6 @@ class BulkData:
     >>>     data_type = 'trades',
     >>>     raw_data = False
     >>> )
-    >>> bulk_data.get_data_v2(
-    >>>     ticker = 'PETR4',
-    >>>     date = '2024-04-01',
-    >>>     raw_data = False
-    >>> )
 
     Parameters
     ----------------
@@ -70,54 +65,6 @@ class BulkData:
         self.api_key = api_key
         self.token = Authenticator(self.api_key).token
         self.headers = {"authorization": f"authorization {self.token}"}
-
-    def get_data_v2(
-        self,
-        ticker:str,
-        date:str,
-        raw_data:bool=False
-    ):
-        """
-        Get all ticker market data (trades & book events), for a given date.
-
-        Parameters
-        ----------------
-        ticker: str
-            Ticker symbol.
-            Field is required. Example: 'PETR4'.
-        date: str
-            Date.
-            Field is required.
-            Format: 'YYYY-MM-DD'. Example: '2023-07-03', '2023-07-28'.
-        raw_data: bool
-            If false, returns data in a dataframe. If true, returns raw data.
-            Field is not required. Default: False.
-        """     
-        url = f"{url_apis}/marketdata/bulkdata/trades-and-book-events?ticker={ticker}&date={date}"
-
-        response = requests.request("GET", url,  headers=self.headers)
-        if response.status_code == 200:
-            try:
-
-                if raw_data == False:
-                    parquet_buffer = BytesIO(response.content)
-                    parquet_file = pq.ParquetFile(parquet_buffer)
-
-                    df = parquet_file.read().to_pandas()
-                    return df
-                else:
-                    content_disposition = response.headers.get('Content-Disposition', '')
-                    filename = content_disposition.split('filename=')[1]
-
-                    with open(filename, 'wb') as file:
-                        file.write(response.content)
-                    return None
-            except Exception as e:
-                print(f'error while trying to retrieve file:\n{e}')
-                return None
-
-        response = json.loads(response.text)
-        raise BadResponse(f'Error: {response.get("ApiClientError", "")}.\n{response.get("SuggestedAction", "")}')
 
     def get_available_tickers(
         self,
@@ -225,7 +172,7 @@ class BulkData:
             Format: 'YYYY-MM-DD'. Example: '2023-07-03', '2023-07-28'.
         data_type: str
             Market data type.
-            Field is required. Example: 'trades', 'trades-rlp', 'books', 'book-events' or 'auction-times'.
+            Field is required. Available types: 'trades', 'trades-rlp', 'books', 'book-events', 'trades-and-book-events', 'auction-times'.
         n: int
             Book depth.
             Field is not required. Default: 10. N must be an integer between 1 and 50, boundaries included.
@@ -233,7 +180,12 @@ class BulkData:
             If false, returns data in a dataframe. If true, returns raw data.
             Field is not required. Default: False.
         """     
-        url = f"{url_api_v1}/marketdata/bulkdata/{data_type}?ticker={ticker}&date={date}"
+        
+        if data_type == 'trades-and-book-events':
+            base_url = url_apis
+        else:
+            base_url = url_api_v1
+        url = f"{base_url}/marketdata/bulkdata/{data_type}?ticker={ticker}&date={date}"
 
         response = requests.request("GET", url,  headers=self.headers)
         if response.status_code == 200:
