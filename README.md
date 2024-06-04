@@ -179,6 +179,7 @@ last_event.get_trades(data_type='equities', ticker='VALE3')
 ```
 
 ## Example BulkData - Available Tickers
+
 ```python
 import btgsolutions_dataservices as btg
 bulk_data = btg.BulkData(api_key='YOUR_API_KEY')
@@ -186,6 +187,7 @@ bulk_data.get_available_tickers(date='2023-07-03', data_type='trades', prefix='P
 ```
 
 ## Example BulkData - Get Data
+
 ```python
 import btgsolutions_dataservices as btg
 bulk_data = btg.BulkData(api_key='YOUR_API_KEY')
@@ -195,6 +197,7 @@ bulk_data.get_data(ticker='PETR4', date='2023-07-03', data_type='trades')
 ```
 
 ## Example BulkData - Get Market Data Channels
+
 ```python
 import btgsolutions_dataservices as btg
 bulk_data = btg.BulkData(api_key='YOUR_API_KEY')
@@ -202,6 +205,7 @@ bulk_data.get_market_data_channels(date='2024-01-03')
 ```
 
 ## Example BulkData - Get Compressed Data (PCAP files)
+
 ```python
 import btgsolutions_dataservices as btg
 bulk_data = btg.BulkData(api_key='YOUR_API_KEY')
@@ -224,6 +228,15 @@ intra_tickdata.get_trades(ticker='PETR4')
 import btgsolutions_dataservices as btg
 hfn = btg.HighFrequencyNews(api_key='YOUR_API_KEY')
 hfn.latest_news()
+```
+
+## Example - Corporate Events
+
+```python
+import btgsolutions_dataservices as btg
+corporate_events = btg.CorporateEvents(api_key='YOUR_API_KEY')
+corporate_events.get(start_date='2024-05-01', end_date='2024-05-31')
+# corporate_events.get(start_date='2024-05-01', end_date='2024-05-31', tickers=['VALE3'])
 ```
 
 ## Documentation
