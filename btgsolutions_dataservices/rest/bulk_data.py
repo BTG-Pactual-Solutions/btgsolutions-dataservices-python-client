@@ -46,8 +46,8 @@ class BulkData:
     >>>     api_key='YOUR_API_KEY',
     >>> )
     >>> bulk_data.get_data(
-    >>>     ticker = 'PETR4',
-    >>>     date = '2023-07-03',
+    >>>     ticker = 'DI1F18',
+    >>>     date = '2017-01-02',
     >>>     data_type = 'trades',
     >>>     raw_data = False
     >>> )
@@ -85,13 +85,13 @@ class BulkData:
         data_type: str
             Market data type.
             Field is required.
-            Example: 'trades', 'trades-rlp' or 'books'.
+            Example: 'trades', 'books' or 'trades-and-book-events'.
         prefix: str
             Filters tickers starting with the prefix.
             Field is optional.
             Example: 'DOL'.
         """
-        url = f"{url_api_v1}/marketdata/bulkdata/available-tickers?date={date}&data_type={data_type}&prefix={prefix}"
+        url = f"{url_apis}/marketdata/bulkdata/available-tickers?date={date}&data_type={data_type}&prefix={prefix}"
         response = requests.request("GET", url,  headers=self.headers)
 
         response_json = response.json()
@@ -155,37 +155,29 @@ class BulkData:
         ticker:str,
         date:str,
         data_type:str='trades',
-        n:int=10,
         raw_data:bool=False
     ):
         """
-        This method provides tick-by-tick market data (trades, RLP-trades, books) for a given ticker and date.
+        This method provides tick-by-tick market data (trades, book events, book snapshots) for a given ticker and date.
 
         Parameters
         ----------------
         ticker: str
             Ticker that needs to be returned.
-            Field is required. Example: 'PETR4'.
+            Field is required. Example: 'DI1F18'.
         date: str
             Date period.
             Field is required.
             Format: 'YYYY-MM-DD'. Example: '2023-07-03', '2023-07-28'.
         data_type: str
             Market data type.
-            Field is required. Available types: 'trades', 'trades-rlp', 'books', 'book-events', 'trades-and-book-events', 'auction-times'.
-        n: int
-            Book depth.
-            Field is not required. Default: 10. N must be an integer between 1 and 50, boundaries included.
+            Field is required. Available types: 'trades', 'books', 'trades-and-book-events'
         raw_data: bool
             If false, returns data in a dataframe. If true, returns raw data.
             Field is not required. Default: False.
-        """     
-        
-        if data_type == 'trades-and-book-events':
-            base_url = url_apis
-        else:
-            base_url = url_api_v1
-        url = f"{base_url}/marketdata/bulkdata/{data_type}?ticker={ticker}&date={date}"
+        """
+
+        url = f"{url_apis}/marketdata/bulkdata/{data_type}?ticker={ticker}&date={date}"
 
         response = requests.request("GET", url,  headers=self.headers)
         if response.status_code == 200:
@@ -195,15 +187,7 @@ class BulkData:
                 if raw_data == False:
                     parquet_buffer = BytesIO(response.content)
                     parquet_file = pq.ParquetFile(parquet_buffer)
-
-                    if data_type == 'books':
-                        if not 1 <= n <= 50:
-                            raise Exception("'n' must be an integer between 1 and 50, boundaries included.")
-
-                        columns_to_filter = self.__get_cols(n)
-                        df = parquet_file.read(columns=columns_to_filter).to_pandas()
-                    else:
-                        df = parquet_file.read().to_pandas()
+                    df = parquet_file.read().to_pandas()
 
                     return df
 
@@ -222,12 +206,3 @@ class BulkData:
 
         response = json.loads(response.text)
         raise BadResponse(f'Error: {response.get("ApiClientError", "")}.\n{response.get("SuggestedAction", "")}')
-
-    def __get_cols(self, n:int=10):
-
-        book_depth_col_types = ['bp','bq','op','oq']
-        book_depth_cols = [type+str(i) for type in book_depth_col_types for i in range(1,n+1)]
-        timestamp_col = ['timestamp']
-        columns_to_filter = timestamp_col + book_depth_cols
-
-        return columns_to_filter

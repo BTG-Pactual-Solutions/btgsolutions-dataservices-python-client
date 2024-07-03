@@ -1,3 +1,12 @@
+2.0.0 (2024-07-03)
+
+
+Changed
+
+
+- Updated Bulk Data API to version 2 (#1)
+
+
 1.1.0 (2024-06-03)
 
 

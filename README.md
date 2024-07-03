@@ -191,8 +191,8 @@ bulk_data.get_available_tickers(date='2023-07-03', data_type='trades', prefix='P
 ```python
 import btgsolutions_dataservices as btg
 bulk_data = btg.BulkData(api_key='YOUR_API_KEY')
-bulk_data.get_data(ticker='PETR4', date='2023-07-03', data_type='trades')
-# bulk_data.get_data(ticker='PETR4', date='2024-01-22', data_type='book-events')
+bulk_data.get_data(ticker='DI1F18', date='2017-01-02', data_type='trades')
+# bulk_data.get_data(ticker='PETR4', date='2024-01-22', data_type='books')
 # bulk_data.get_data(ticker='VALE3', date='2024-04-01', data_type='trades-and-book-events')
 ```
 
