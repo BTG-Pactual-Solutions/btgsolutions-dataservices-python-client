@@ -20,6 +20,14 @@ btgsolutions\_dataservices.rest.bulk\_data module
    :undoc-members:
    :show-inheritance:
 
+btgsolutions\_dataservices.rest.corporate\_events module
+--------------------------------------------------------
+
+.. automodule:: btgsolutions_dataservices.rest.corporate_events
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 btgsolutions\_dataservices.rest.hfn module
 ------------------------------------------
 
