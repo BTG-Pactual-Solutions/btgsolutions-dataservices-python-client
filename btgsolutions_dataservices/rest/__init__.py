@@ -7,3 +7,4 @@ from .quotes import Quotes
 from .intraday_tick_data import IntradayTickData
 from .ticker_last_event import TickerLastEvent
 from .corporate_events import CorporateEvents
+from .company_data import CompanyData

@@ -8,7 +8,9 @@ Python library to get Brazilian Financial Market Data.
 pip3 install btgsolutions-dataservices-python-client
 ```
 
-## Example - WebSocket Books
+## Examples
+
+### WebSocket Books
 
 ```python
 import btgsolutions_dataservices as btg
@@ -24,7 +26,7 @@ ws.run(on_message=lambda message: print(message))
 # ws.available_to_subscribe()
 ```
 
-## Example - WebSocket Trades Delayed
+### WebSocket Trades Delayed
 
 ```python
 import btgsolutions_dataservices as btg
@@ -40,7 +42,7 @@ ws.run(on_message=lambda message: print(message))
 # ws.available_to_subscribe()
 ```
 
-## Example - WebSocket Trades with 1 second throttle
+### WebSocket Trades with 1 second throttle
 
 ```python
 import btgsolutions_dataservices as btg
@@ -56,7 +58,7 @@ ws.run(on_message=lambda message: print(message))
 # ws.available_to_subscribe()
 ```
 
-## Example - WebSocket Securities (Derivatives)
+### WebSocket Securities (Derivatives)
 
 ```python
 import btgsolutions_dataservices as btg
@@ -69,7 +71,7 @@ ws.run(on_message=lambda message: print(message))
 #   sleep(1)
 ```
 
-## Example - WebSocket Candles 1S
+### WebSocket Candles 1S
 
 ```python
 import btgsolutions_dataservices as btg
@@ -88,7 +90,7 @@ ws.candle_subscribe(list_instruments=['PETR4','VALE3'], candle_type='partial')
 # ws.candle_unsubscribe(list_instruments=['PRIO3', 'PETR4'], candle_type='all')
 ```
 
-## Example - WebSocket BMV Trades
+### WebSocket BMV Trades
 
 ```python
 import btgsolutions_dataservices as btg
@@ -101,7 +103,7 @@ ws.run(on_message=lambda message: print(message))
 #   sleep(1)
 ```
 
-## Example - WebSocket Books (without spawning a new thread for incoming server messages)
+### WebSocket Books (without spawning a new thread for incoming server messages)
 
 ```python
 import btgsolutions_dataservices as btg
@@ -117,7 +119,7 @@ ws.run(on_message=lambda message: print(message), spawn_thread=False)
 # ws.available_to_subscribe()
 ```
 
-## Example - WebSocket High Frequency News
+### WebSocket High Frequency News
 
 ```python
 import btgsolutions_dataservices as btg
@@ -130,7 +132,7 @@ ws.run(on_message=lambda message: print(message))
 #   sleep(1)
 ```
 
-## Example - IntradayCandles
+### IntradayCandles
 
 ```python
 import btgsolutions_dataservices as btg
@@ -138,7 +140,7 @@ int_candles = btg.IntradayCandles(api_key='YOUR_API_KEY')
 int_candles.get_intraday_candles(market_type='stocks', tickers=['PETR4', 'VALE3'], candle_period='1m', mode='relative', raw_data=True)
 ```
 
-## Example - Get Interday History Candles
+### Get Interday History Candles
 
 ```python
 import btgsolutions_dataservices as btg
@@ -146,7 +148,7 @@ hist_candles = btg.HistoricalCandles(api_key='YOUR_API_KEY')
 hist_candles.get_interday_history_candles(ticker='PETR4',  market_type='stocks', corporate_events_adj=True, start_date='2023-10-01', end_date='2023-10-13', rmv_after_market=True, timezone='UTC', raw_data=False)
 ```
 
-## Example - Get Intraday History Candles
+### Get Intraday History Candles
 
 ```python
 import btgsolutions_dataservices as btg
@@ -154,7 +156,7 @@ hist_candles = btg.HistoricalCandles(api_key='YOUR_API_KEY')
 hist_candles.get_intraday_history_candles(ticker='PETR4',  market_type='stocks', corporate_events_adj=True, date='2023-10-06', candle='1m', rmv_after_market=True, timezone='UTC', raw_data=False)
 ```
 
-## Example - Plot History Candles
+### Plot History Candles
 
 ```python
 import btgsolutions_dataservices as btg
@@ -162,7 +164,7 @@ hist_candles = btg.HistoricalCandles(api_key='YOUR_API_KEY')
 hist_candles.get_intraday_history_candles(ticker='PETR4',  market_type='stocks', corporate_events_adj=True, date='2023-10-06', candle='1m', rmv_after_market=True, timezone='UTC', raw_data=False).plot(x='candle_time', y='close_price', kind='scatter')
 ```
 
-## Example - Quotes
+### Quotes
 
 ```python
 import btgsolutions_dataservices as btg
@@ -170,7 +172,7 @@ quotes = btg.Quotes(api_key='YOUR_API_KEY')
 quotes.get_quote(market_type = 'stocks', tickers = ['PETR4', 'VALE3'])
 ```
 
-## Example - Ticker Last Event
+### Ticker Last Event
 
 ```python
 import btgsolutions_dataservices as btg
@@ -178,7 +180,7 @@ last_event = btg.TickerLastEvent(api_key='YOUR_API_KEY')
 last_event.get_trades(data_type='equities', ticker='VALE3')
 ```
 
-## Example BulkData - Available Tickers
+### BulkData - Available Tickers
 
 ```python
 import btgsolutions_dataservices as btg
@@ -186,7 +188,7 @@ bulk_data = btg.BulkData(api_key='YOUR_API_KEY')
 bulk_data.get_available_tickers(date='2023-07-03', data_type='trades', prefix='PETR')
 ```
 
-## Example BulkData - Get Data
+### BulkData - Get Data
 
 ```python
 import btgsolutions_dataservices as btg
@@ -196,7 +198,7 @@ bulk_data.get_data(ticker='DI1F18', date='2017-01-02', data_type='trades')
 # bulk_data.get_data(ticker='VALE3', date='2024-04-01', data_type='trades-and-book-events')
 ```
 
-## Example BulkData - Get Market Data Channels
+### BulkData - Get Market Data Channels
 
 ```python
 import btgsolutions_dataservices as btg
@@ -204,7 +206,7 @@ bulk_data = btg.BulkData(api_key='YOUR_API_KEY')
 bulk_data.get_market_data_channels(date='2024-01-03')
 ```
 
-## Example BulkData - Get Compressed Data (PCAP files)
+### BulkData - Get Compressed Data (PCAP files)
 
 ```python
 import btgsolutions_dataservices as btg
@@ -214,7 +216,7 @@ bulk_data.get_compressed_data(channel='001', date='2024-01-03', data_type='instr
 # bulk_data.get_compressed_data(channel='051', date='2024-01-03', data_type='snapshot')
 ```
 
-## Example - Intraday Tick Data
+### Intraday Tick Data
 
 ```python
 import btgsolutions_dataservices as btg
@@ -222,7 +224,7 @@ intra_tickdata = btg.IntradayTickData(api_key='YOUR_API_KEY')
 intra_tickdata.get_trades(ticker='PETR4')
 ```
 
-## Example - HighFrequencyNews
+### High Frequency News
 
 ```python
 import btgsolutions_dataservices as btg
@@ -230,13 +232,78 @@ hfn = btg.HighFrequencyNews(api_key='YOUR_API_KEY')
 hfn.latest_news()
 ```
 
-## Example - Corporate Events
+### Corporate Events
 
 ```python
 import btgsolutions_dataservices as btg
 corporate_events = btg.CorporateEvents(api_key='YOUR_API_KEY')
 corporate_events.get(start_date='2024-05-01', end_date='2024-05-31')
 # corporate_events.get(start_date='2024-05-01', end_date='2024-05-31', tickers=['VALE3'])
+```
+
+### Company Data
+#### Company General Information
+
+```python
+import btgsolutions_dataservices as btg
+company_data = btg.CompanyData(api_key='YOUR_API_KEY')
+company_data.general_info(ticker='PETR4')
+```
+
+#### Income Statement
+
+```python
+import btgsolutions_dataservices as btg
+company_data = btg.CompanyData(api_key='YOUR_API_KEY')
+company_data.income_statement(ticker='PETR4')
+```
+
+#### Balance Sheet
+
+```python
+import btgsolutions_dataservices as btg
+company_data = btg.CompanyData(api_key='YOUR_API_KEY')
+company_data.balance_sheet(ticker='PETR4')
+```
+
+#### Cash Flow
+
+```python
+import btgsolutions_dataservices as btg
+company_data = btg.CompanyData(api_key='YOUR_API_KEY')
+company_data.cash_flow(ticker='PETR4')
+```
+
+#### Valuation
+
+```python
+import btgsolutions_dataservices as btg
+company_data = btg.CompanyData(api_key='YOUR_API_KEY')
+company_data.valuation(ticker='PETR4')
+```
+
+#### Ratios
+
+```python
+import btgsolutions_dataservices as btg
+company_data = btg.CompanyData(api_key='YOUR_API_KEY')
+company_data.ratios(ticker='PETR4')
+```
+
+#### Growth
+
+```python
+import btgsolutions_dataservices as btg
+company_data = btg.CompanyData(api_key='YOUR_API_KEY')
+company_data.growth(ticker='PETR4')
+```
+
+#### Interims
+
+```python
+import btgsolutions_dataservices as btg
+company_data = btg.CompanyData(api_key='YOUR_API_KEY')
+company_data.interims(ticker='PETR4')
 ```
 
 ## Documentation
