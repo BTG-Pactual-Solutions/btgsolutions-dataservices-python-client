@@ -306,6 +306,14 @@ company_data = btg.CompanyData(api_key='YOUR_API_KEY')
 company_data.interims(ticker='PETR4')
 ```
 
+#### All Financial Tables
+
+```python
+import btgsolutions_dataservices as btg
+company_data = btg.CompanyData(api_key='YOUR_API_KEY')
+company_data.all_financial_tables(ticker='PETR4')
+```
+
 ## Documentation
 
 The official documentation is hosted at https://python-client-docs.dataservices.btgpactualsolutions.com/
