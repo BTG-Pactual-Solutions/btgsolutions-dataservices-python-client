@@ -137,7 +137,7 @@ ws.run(on_message=lambda message: print(message))
 ```python
 import btgsolutions_dataservices as btg
 int_candles = btg.IntradayCandles(api_key='YOUR_API_KEY')
-int_candles.get_intraday_candles(market_type='stocks', tickers=['PETR4', 'VALE3'], candle_period='1m', mode='relative', raw_data=True)
+int_candles.get_intraday_candles(market_type='stocks', tickers=['PETR4', 'VALE3'], candle_period='1m', delay='delayed', mode='relative', timezone='UTC', raw_data=True)
 ```
 
 ### Get Interday History Candles
