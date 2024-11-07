@@ -1,3 +1,12 @@
+2.1.2 (2024-11-07)
+
+
+Changed
+
+
+- Updated Intraday Candles API to version 3 (#1)
+
+
 2.1.1 (2024-10-14)
 
 
