@@ -1,3 +1,12 @@
+2.2.0 (2024-11-08)
+
+
+Added
+
+
+- Add compatibility with Python 3.12.X (#1)
+
+
 2.1.2 (2024-11-07)
 
 
