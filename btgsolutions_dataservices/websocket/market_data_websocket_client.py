@@ -2,7 +2,7 @@
 from typing import Optional, List
 from ..exceptions import WSTypeError, DelayedError, FeedError
 from ..rest import Authenticator
-from ..config import market_data_socket_urls, MAX_WS_RECONNECT_RETRIES, VALID_STREAM_TYPES, VALID_EXCHANGES, VALID_MARKET_DATA_TYPES, VALID_MARKET_DATA_SUBTYPES, REALTIME, B3, TRADES, INDICES, ALL, STOCKS
+from ..config import market_data_socket_urls, MAX_WS_RECONNECT_RETRIES, VALID_STREAM_TYPES, VALID_EXCHANGES, VALID_MARKET_DATA_TYPES, VALID_MARKET_DATA_SUBTYPES, REALTIME, B3, TRADES, INDICES, ALL, STOCKS, BOOKS
 from .websocket_default_functions import _on_open, _on_message, _on_error, _on_close
 import websocket
 import json
@@ -79,6 +79,7 @@ class MarketDataWebSocketClient:
     ):
         self.api_key = api_key
         self.instruments = instruments
+        self.data_type = data_type
         self.ssl = ssl
 
         self.__authenticator = Authenticator(self.api_key)
@@ -244,7 +245,7 @@ class MarketDataWebSocketClient:
         """
         self.ws.close()
 
-    def subscribe(self, list_instruments):
+    def subscribe(self, list_instruments, n=None):
         """
         Subscribes a list of instruments.
 
@@ -252,10 +253,19 @@ class MarketDataWebSocketClient:
         ----------
         list_instruments: list
             Field is required.
+        n: int
+            Field is not required.
+            **For books data_type only.**
+            Maximum book level. It must be between 1 and 10.    
         """
-        self.__send({'action': 'subscribe', 'params': list_instruments})
-        print(
-            f'Socket subscribed the following instrument(s): {list_instruments}')
+
+        if self.data_type == BOOKS and n is not None:
+            self.__send({'action': 'subscribe', 'params': {"tickers": list_instruments, "n": n}})
+            print(f'Socket subscribed the following instrument(s) with n = {n}: {list_instruments}')
+        else:
+            self.__send({'action': 'subscribe', 'params': list_instruments})
+            print(f'Socket subscribed the following instrument(s): {list_instruments}')
+
 
     def unsubscribe(self, list_instruments):
         """

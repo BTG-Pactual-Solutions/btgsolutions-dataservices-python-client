@@ -1,3 +1,12 @@
+2.3.0 (2024-12-02)
+
+
+Added
+
+
+- Allowing filtering of books by maximun level. (#1)
+
+
 2.2.0 (2024-11-08)
 
 
