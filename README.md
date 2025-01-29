@@ -332,6 +332,15 @@ company_data = btg.CompanyData(api_key='YOUR_API_KEY')
 company_data.all_financial_tables(ticker='PETR4')
 ```
 
+#### Public Sources - OPA
+
+```python
+import btgsolutions_dataservices as btg
+public_sources = btg.PublicSources(api_key='YOUR_API_KEY')
+public_sources.get_opas(start_date='2022-10-01', end_date='2024-10-01')
+```
+
+
 ## Documentation
 
 The official documentation is hosted at https://python-client-docs.dataservices.btgpactualsolutions.com/
