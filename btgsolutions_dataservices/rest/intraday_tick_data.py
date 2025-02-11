@@ -36,7 +36,7 @@ class IntradayTickData:
         self.token = Authenticator(self.api_key).token
         self.headers = {"authorization": f"authorization {self.token}"}
 
-    def get_trades(self, ticker:str, raw_data:bool=False):
+    def get_trades(self, ticker:str, start:str=None, end:str=None, raw_data:bool=False):
 
         """
         This method provides tick-by-tick trade data from the current day, for the provided ticker.
@@ -46,11 +46,23 @@ class IntradayTickData:
         ticker: str
             Ticker symbol.
             Field is required. Example: 'PETR4'.
+        start: str
+            Query start datetime, in ISO string format (UTC).
+            Field is required. Examples: '2025-02-11', '2025-02-11T17:40:00.000Z'.
+        end: str
+            Query end datetime, in ISO string format (UTC).
+            Field is required. Examples: '2025-02-12', '2025-02-11T18:10:00.000Z'.
         raw_data: bool
             If false, returns data in a dataframe. If true, returns raw data.
             Field is not required. Default: False.
         """     
         url = f"{url_api_v1}/marketdata/tick/intraday/trades/{ticker}"
+        if isinstance(start, str) and isinstance(end, str):
+            url += f'?start={start}&end={end}'
+        elif isinstance(start, str):
+            url += f'?start={start}'
+        elif isinstance(end, str):
+            url += f'?end={end}'
 
         response = requests.request("GET", url,  headers=self.headers)
         if response.status_code == 200:

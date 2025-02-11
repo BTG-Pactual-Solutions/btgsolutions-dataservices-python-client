@@ -123,6 +123,7 @@ class MarketDataWebSocketClient:
         on_close=None,
         reconnect=True,
         spawn_thread:bool=True,
+        default_logs:bool=True,
     ):
         """
         Initializes a connection to websocket and subscribes to the instruments, if it was passed in the class initialization.
@@ -163,6 +164,10 @@ class MarketDataWebSocketClient:
             Spawn a new thread for incoming server messages (on_message callback function)
             Field is not required.
             Default: True.
+        default_logs: bool
+            Default non-required logs, detailing messages sent from the client to the WebSocket server.
+            Field is not required.
+            Default: True.
         """
         if on_open is None:
             on_open = _on_open
@@ -172,6 +177,7 @@ class MarketDataWebSocketClient:
             on_error = _on_error
         if on_close is None:
             on_close = _on_close
+        self.default_logs = default_logs if default_logs is True else False
 
         def intermediary_on_open(ws):
             on_open()
@@ -236,7 +242,8 @@ class MarketDataWebSocketClient:
         """
         if not isinstance(data, str):
             data = json.dumps(data)
-        print(f'Sending data: {data}')
+        if self.default_logs:
+            print(f'Sending data: {data}')
         return self.ws.send(data)
 
     def close(self):
