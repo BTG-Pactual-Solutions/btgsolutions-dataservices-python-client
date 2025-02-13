@@ -81,6 +81,7 @@ class MarketDataWebSocketClient:
         self.instruments = instruments
         self.data_type = data_type
         self.ssl = ssl
+        self.default_logs = True
 
         self.__authenticator = Authenticator(self.api_key)
         self.__nro_reconnect_retries = 0
@@ -236,14 +237,17 @@ class MarketDataWebSocketClient:
                 break
             pass
 
+    def __print(self, log: str):
+        if self.default_logs:
+            print(log)
+
     def __send(self, data):
         """
         Class method to be used internally. Sends data to websocket.
         """
         if not isinstance(data, str):
             data = json.dumps(data)
-        if self.default_logs:
-            print(f'Sending data: {data}')
+        self.__print(f'Sending data: {data}')
         return self.ws.send(data)
 
     def close(self):
@@ -268,10 +272,10 @@ class MarketDataWebSocketClient:
 
         if self.data_type == BOOKS and n is not None:
             self.__send({'action': 'subscribe', 'params': {"tickers": list_instruments, "n": n}})
-            print(f'Socket subscribed the following instrument(s) with n = {n}: {list_instruments}')
+            self.__print(f'Socket subscribed the following instrument(s) with n = {n}: {list_instruments}')
         else:
             self.__send({'action': 'subscribe', 'params': list_instruments})
-            print(f'Socket subscribed the following instrument(s): {list_instruments}')
+            self.__print(f'Socket subscribed the following instrument(s): {list_instruments}')
 
 
     def unsubscribe(self, list_instruments):
@@ -284,8 +288,8 @@ class MarketDataWebSocketClient:
             Field is required.
         """
         self.__send({'action': 'unsubscribe', 'params': list_instruments})
-        print(
-            f'Socket subscribed the following instrument(s): {list_instruments}')
+        self.__print(
+            f'Socket unsubscribed the following instrument(s): {list_instruments}')
 
     def subscribed_to(self):
         """
@@ -346,7 +350,7 @@ class MarketDataWebSocketClient:
         """
         self.__send(
             {'action': 'subscribe', 'params': list_instruments, 'type': candle_type})
-        print(
+        self.__print(
             f'Socket subscribed the following instrument(s): {list_instruments}')
 
     def candle_unsubscribe(self, list_instruments: list, candle_type: str):
@@ -362,5 +366,5 @@ class MarketDataWebSocketClient:
         """
         self.__send({'action': 'unsubscribe',
                     'params': list_instruments, 'type': candle_type})
-        print(
+        self.__print(
             f'Socket unsubscribed the following instrument(s): {list_instruments}')

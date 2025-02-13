@@ -16,10 +16,7 @@ class CustomClient:
 
     def __init__(self, api_key:str, data_subtype:str, data_type:str='books'):
 
-        self.last_bid_and_offer_by_ticker = {}
-        self.available_to_subscribe = []
-
-        self.blank_last_event_number = 0
+        self.reset_internal_states()
 
         self.ws = btg.MarketDataWebSocketClient(
             api_key=api_key,
@@ -28,6 +25,18 @@ class CustomClient:
             data_type=data_type,
             data_subtype=data_subtype
         )
+
+        self.ws.run(
+            on_open=self.on_open_connection_callback,
+            on_message=self.message_callback,
+            reconnect=True,
+            default_logs=False
+        )
+
+    def reset_internal_states(self,):
+        self.last_bid_and_offer_by_ticker = {}
+        self.available_to_subscribe = []
+        self.blank_last_event_number = 0
 
     def request_available_tickers_to_subscribe(self,):
         self.ws.available_to_subscribe()
@@ -53,13 +62,12 @@ class CustomClient:
                 if self.last_bid_and_offer_by_ticker.get(msg_ticker):
                     pass
                 else:
-                    self.last_bid_and_offer_by_ticker[msg_ticker] = self.get_last_bid_and_offer_from_message(msg)
-                    self.subscribe([msg_ticker])
+                    self.last_bid_and_offer_by_ticker[msg_ticker] = self.get_last_bid_and_offer_from_message(msg, source="last_event")
                 return
             elif msg["ev"] == "book":
                 # NOTE: Comment this "book" if clause if you do not want your dictionary to be updated continuously in realtime
                 msg_ticker = msg["symb"]
-                self.last_bid_and_offer_by_ticker[msg_ticker] = self.get_last_bid_and_offer_from_message(msg)
+                self.last_bid_and_offer_by_ticker[msg_ticker] = self.get_last_bid_and_offer_from_message(msg, source="book_event")
                 return
             elif msg["ev"] == "available_to_subscribe":
                 if msg["message"] is None:
@@ -67,30 +75,41 @@ class CustomClient:
                     return
                 else:
                     self.available_to_subscribe = msg["message"]
+                    self.fill_last_event(ticker_list=self.available_to_subscribe)
+                    self.subscribe(self.available_to_subscribe)
         except Exception as e:
             print(msg)
             print(e)
             print(traceback.format_exc())
         
-    def get_last_bid_and_offer_from_message(self, msg):
+    def get_last_bid_and_offer_from_message(self, msg, source):
 
         last_bid_offer = {
             "bid": None,
             "bid_vol": None,
             "ask": None,
             "ask_vol": None,
+            "source": source,
         }
+        last_update = None
+
         if msg["bid"] and len(msg["bid"]) > 0:
             last_bid_offer["bid"] = msg["bid"][0]["px"]
             last_bid_offer["bid_vol"] = msg["bid"][0]["qty"]
+            last_update = msg["bid"][0]["datetime"]
         if msg["offer"] and len(msg["offer"]) > 0:
             last_bid_offer["ask"] = msg["offer"][0]["px"]
             last_bid_offer["ask_vol"] = msg["offer"][0]["qty"]
+            last_update = msg["offer"][0]["datetime"]
         
+        last_bid_offer["last_update"] = last_update
+
         return last_bid_offer
 
-    def start_connection(self):
-        self.ws.run(on_message=self.message_callback, default_logs=False)
+    def on_open_connection_callback(self):
+        # NOTE: called both in new connections and reconnections
+        self.reset_internal_states()
+        self.request_available_tickers_to_subscribe()
     
     def subscribe(self, tickers:list):
         self.ws.subscribe(tickers, n=1)
@@ -111,18 +130,14 @@ client = None
 
 def start_data_stream_consuming():
     global client
-    client = CustomClient(API_KEY, data_subtype=DATA_SUBTYPE)
-    client.start_connection()
-    client.request_available_tickers_to_subscribe()
-    sleep(3) # wait until available ticker response comes
-
-    client.fill_last_event(ticker_list=client.available_to_subscribe) 
-
-    return client
+    if client is None:
+        client = CustomClient(API_KEY, data_subtype=DATA_SUBTYPE)
+    else:
+        print("Client already initialized, now preventing new initialization.")
 
 threading.Thread(target=start_data_stream_consuming).start()
 
-sleep(5)
+sleep(1)
 
 with st.empty():
     while True:
