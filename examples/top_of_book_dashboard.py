@@ -11,11 +11,13 @@ from time import sleep
 import threading
 
 DATA_SUBTYPE = "stocks" # "stocks", 'derivatives', 'options'
+TICKERS_OF_INTEREST = ["BPAC11", "VALE3", "MGLU3", "AMER3", "SHOW3"]
 
 class CustomClient:
 
-    def __init__(self, api_key:str, data_subtype:str, data_type:str='books'):
+    def __init__(self, api_key:str, data_subtype:str, data_type:str='books', ticker_list=None):
 
+        self.ticker_list = ticker_list
         self.reset_internal_states()
 
         self.ws = btg.MarketDataWebSocketClient(
@@ -75,11 +77,18 @@ class CustomClient:
                     return
                 else:
                     self.available_to_subscribe = msg["message"]
-                    self.fill_last_event(ticker_list=self.available_to_subscribe)
-                    self.subscribe(self.available_to_subscribe)
+
+                    tickers_to_subscribe = set(self.available_to_subscribe) & set(self.ticker_list)
+                    not_available_to_subscribe = set(self.ticker_list) - set(self.available_to_subscribe)
+                    if len(not_available_to_subscribe) > 0:
+                        print(f"The following instruments of interest were not available to subscribe: {not_available_to_subscribe}. Check DataSubtype or ticker validity.")
+
+                    tickers_to_subscribe = list(tickers_to_subscribe)
+                    self.fill_last_event(ticker_list=tickers_to_subscribe)
+                    self.subscribe(tickers_to_subscribe)
         except Exception as e:
-            print(msg)
-            print(e)
+            # print(msg)
+            # print(e)
             print(traceback.format_exc())
         
     def get_last_bid_and_offer_from_message(self, msg, source):
@@ -125,17 +134,10 @@ class CustomClient:
         df = pd.DataFrame().from_dict(self.last_bid_and_offer_by_ticker).T
         return df
 
-
-client = None
-
-def start_data_stream_consuming():
-    global client
-    if client is None:
-        client = CustomClient(API_KEY, data_subtype=DATA_SUBTYPE)
-    else:
-        print("Client already initialized, now preventing new initialization.")
-
-threading.Thread(target=start_data_stream_consuming).start()
+@st.cache_resource
+def get_client():
+    return CustomClient(API_KEY, data_subtype=DATA_SUBTYPE, ticker_list=TICKERS_OF_INTEREST)
+client = get_client()
 
 sleep(1)
 
