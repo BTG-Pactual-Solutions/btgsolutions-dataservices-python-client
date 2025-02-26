@@ -49,7 +49,7 @@ class MarketDataWebSocketClient:
 
     data_type: str
         Market Data type.
-        Options: 'trades', 'processed-trades', 'books', 'indices', 'securities', 'stoploss', 'candles-1S', 'candles-1M'.
+        Options: 'trades', 'processed-trades', 'books', 'indices', 'securities', 'stoploss', 'candles-1S', 'candles-1M', 'instrument_status'.
         Field is not required. Default: 'trades'.
 
     data_subtype: str
@@ -302,6 +302,18 @@ class MarketDataWebSocketClient:
         Return avaiable tickers to subscribe.
         """
         self.__send({'action': 'available_to_subscribe'})
+
+    def instrument_status(self, ticker:str):
+        """
+        Returns the instrument latest status.
+        """
+        self.__send({'action': 'instrument_status', 'params': [ticker]})
+
+    def instrument_status_history(self, ticker:str):
+        """
+        Returns the latest 10 status of the instrument.
+        """
+        self.__send({'action': 'instrument_history', 'params': [ticker]})
 
     def notify_stoploss(self, instrument_params):
         """

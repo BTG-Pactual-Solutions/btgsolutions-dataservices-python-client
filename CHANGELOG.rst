@@ -1,3 +1,13 @@
+2.7.0 (2025-02-26)
+
+
+Added
+
+
+- Websocket instrument status subscription and history
+- Changed example of top of book dashboard, adding some fields and improving performance. Added a specific print function for default logs.
+- Added an example of a dashboard that uses WS Books to update asset top of book in realtime
+
 2.4.0 (2025-01-29)
 
 
