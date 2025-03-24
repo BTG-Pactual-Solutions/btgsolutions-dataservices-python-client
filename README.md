@@ -344,7 +344,7 @@ company_data = btg.CompanyData(api_key='YOUR_API_KEY')
 company_data.all_financial_tables(ticker='PETR4')
 ```
 
-#### Public Sources - OPA
+### Public Sources - OPA
 
 ```python
 import btgsolutions_dataservices as btg
@@ -352,6 +352,13 @@ public_sources = btg.PublicSources(api_key='YOUR_API_KEY')
 public_sources.get_opas(start_date='2022-10-01', end_date='2024-10-01')
 ```
 
+### Reference Data - Ticker Reference
+
+```python
+import btgsolutions_dataservices as btg
+ref = btg.ReferenceData(api_key='YOUR_API_KEY')
+ref.ticker_reference(tickers=['VALE3','PETR4'])
+```
 
 ## Documentation
 
