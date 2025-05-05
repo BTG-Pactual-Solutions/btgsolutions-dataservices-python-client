@@ -20,6 +20,7 @@ CL = 'chile'
 
 B3 = 'b3'
 BMV = 'bmv'
+NASDAQ = 'nasdaq'
 
 SECURITIES = 'securities'
 TRADES = 'trades'
@@ -38,7 +39,7 @@ DERIVATIVES = 'derivatives'
 
 VALID_STREAM_TYPES = [REALTIME, DELAYED, THROTTLE]
 VALID_COUNTRIES = [BR, MX, CL]
-VALID_EXCHANGES = [B3, BMV]
+VALID_EXCHANGES = [B3, BMV, NASDAQ]
 VALID_MARKET_DATA_TYPES = [
     SECURITIES,
     TRADES,
@@ -138,6 +139,13 @@ market_data_socket_urls = {
             },
         },
     },
+    NASDAQ: {
+        TRADES: {
+            REALTIME: {
+                ALL: f'{url_ws}v1/marketdata/us/nasdaq/{TRADES}',
+            }
+        }
+    }
 }
 
 hfn_socket_urls = {

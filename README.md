@@ -90,7 +90,21 @@ ws.candle_subscribe(list_instruments=['PETR4','VALE3'], candle_type='partial')
 # ws.candle_unsubscribe(list_instruments=['PRIO3', 'PETR4'], candle_type='all')
 ```
 
-### WebSocket BMV Trades
+### WebSocket NASDAQ (US) Trades
+
+```python
+import btgsolutions_dataservices as btg
+ws = btg.MarketDataWebSocketClient(api_key='YOUR_API_KEY', exchange='nasdaq', data_type='trades')
+ws.run(on_message=lambda message: print(message))
+ws.subscribe(['AMZN', 'GOOG', 'TSLA'])
+
+## The following is optional to keep the program running in a .py file:
+# from time import sleep
+# while True:
+#   sleep(1)
+```
+
+### WebSocket BMV (MX) Trades
 
 ```python
 import btgsolutions_dataservices as btg
@@ -135,7 +149,7 @@ ws.subscribe(['PETR4', 'VALE3'], n=1)
 # ws.available_to_subscribe()
 ```
 
-### WebSocket instrument status
+### WebSocket Instrument Status
 
 ```python
 import btgsolutions_dataservices as btg
