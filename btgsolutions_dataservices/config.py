@@ -148,6 +148,16 @@ market_data_socket_urls = {
     }
 }
 
+market_data_feedb_socket_urls = {
+    B3: {
+        BOOKS: {
+            REALTIME: {
+                OPTIONS: f'{url_ws}v2/feedb/marketdata/book/{OPTIONS}',
+            }
+        }
+    }
+}
+
 hfn_socket_urls = {
     BR: {
         REALTIME: f'{url_ws}v2/hfn/{BR}',

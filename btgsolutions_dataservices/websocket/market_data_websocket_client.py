@@ -2,7 +2,7 @@
 from typing import Optional, List
 from ..exceptions import WSTypeError, DelayedError, FeedError
 from ..rest import Authenticator
-from ..config import market_data_socket_urls, MAX_WS_RECONNECT_RETRIES, VALID_STREAM_TYPES, VALID_EXCHANGES, VALID_MARKET_DATA_TYPES, VALID_MARKET_DATA_SUBTYPES, REALTIME, B3, TRADES, INDICES, ALL, STOCKS, BOOKS
+from ..config import market_data_socket_urls, market_data_feedb_socket_urls, MAX_WS_RECONNECT_RETRIES, VALID_STREAM_TYPES, VALID_EXCHANGES, VALID_MARKET_DATA_TYPES, VALID_MARKET_DATA_SUBTYPES, REALTIME, B3, TRADES, INDICES, ALL, STOCKS, BOOKS
 from .websocket_default_functions import _on_open, _on_message, _on_error, _on_close
 import websocket
 import json
@@ -64,6 +64,11 @@ class MarketDataWebSocketClient:
     ssl: bool
         Enable or disable ssl configuration.
         Field is not required. Default: True (enable).
+
+    feed: str
+        Market Data Feed.
+        Options: 'A', 'B'.
+        Field is not required. Default: 'A' (enable).
     """
 
     def __init__(
@@ -75,6 +80,7 @@ class MarketDataWebSocketClient:
         data_subtype: Optional[str] = None,
         instruments: Optional[List[str]] = [],
         ssl: Optional[bool] = True,
+        feed: Optional[str] = "A",
         **kwargs,
     ):
         self.api_key = api_key
@@ -108,8 +114,13 @@ class MarketDataWebSocketClient:
             raise FeedError(
                 f"Must provide a valid 'data_subtype' parameter. Valid options are: {VALID_MARKET_DATA_SUBTYPES}")
 
+        if feed == "B":
+            url_feed_map = market_data_feedb_socket_urls
+        else:
+            url_feed_map = market_data_socket_urls
+
         try:
-            self.url = market_data_socket_urls[exchange][data_type][stream_type][data_subtype]
+            self.url = url_feed_map[exchange][data_type][stream_type][data_subtype]
         except:
             raise WSTypeError(
                 f"There is no WebSocket type for your specifications (stream_type:{stream_type}, exchange:{exchange}, data_type:{data_type}, data_subtype:{data_subtype})\nPlease check your request parameters and try again")
