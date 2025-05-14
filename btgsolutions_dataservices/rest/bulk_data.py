@@ -142,7 +142,7 @@ class BulkData:
             Format: 'YYYY-MM-DD'. Example: '2023-07-03', '2023-07-28'.
         data_type: str
             Market data type.
-            Field is required. Example: 'instruments', 'snapshot', 'incremental'.
+            Field is required. Example: 'instruments', 'snapshot', 'incremental', 'instrument-status'.
         binary: bool
             If true, returns binary data. If false, returns FIX/FAST data.
             Field is not required. Default: false.
@@ -206,3 +206,52 @@ class BulkData:
 
         response = json.loads(response.text)
         raise BadResponse(f'Error: {response.get("ApiClientError", "")}.\n{response.get("SuggestedAction", "")}')
+
+    def get_security_list(
+        self,
+        date:str,
+        raw_data:bool=False
+    ):
+        """
+        This method returns the security list for a given date.
+
+        Parameters
+        ----------------
+        date: str
+            Date period.
+            Field is required.
+            Format: 'YYYY-MM-DD'. Example: '2025-05-12'.
+        raw_data: bool
+            If false, returns data in a dataframe. If true, returns raw data.
+            Default: False.
+        """
+
+        url = f"{url_apis}/marketdata/bulkdata/security-list?date={date}"
+
+        response = requests.request("GET", url,  headers=self.headers)
+        if response.status_code == 200:
+
+            try:
+
+                if raw_data == False:
+                    parquet_buffer = BytesIO(response.content)
+                    parquet_file = pq.ParquetFile(parquet_buffer)
+                    df = parquet_file.read().to_pandas()
+
+                    return df
+
+                else:
+                    content_disposition = response.headers.get('Content-Disposition', '')
+                    filename = content_disposition.split('filename=')[1]
+
+                    # Write the content to a file
+                    with open(filename, 'wb') as file:
+                        file.write(response.content)
+                    return None
+                
+            except Exception as e:
+                print(f'error while trying to retrieve file:\n{e}')
+                return None
+
+        response = json.loads(response.text)
+        raise BadResponse(f'Error: {response.get("ApiClientError", "") or response.get("ApiServerMessage", "")}.\n{response.get("SuggestedAction", "")}')
