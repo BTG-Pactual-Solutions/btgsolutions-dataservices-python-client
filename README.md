@@ -248,7 +248,7 @@ bulk_data.get_data(ticker='DI1F18', date='2017-01-02', data_type='trades')
 ```python
 import btgsolutions_dataservices as btg
 bulk_data = btg.BulkData(api_key='YOUR_API_KEY')
-bulk_data.security-list(date='2025-05-07')
+bulk_data.get_security_list(date='2025-05-07')
 ```
 
 ### BulkData - Get Market Data Channels
