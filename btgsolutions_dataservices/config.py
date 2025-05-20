@@ -53,6 +53,10 @@ VALID_MARKET_DATA_TYPES = [
 ]
 VALID_MARKET_DATA_SUBTYPES = [ALL, STOCKS, OPTIONS, DERIVATIVES]
 
+FEED_A = "A"
+FEED_B = "B"
+VALID_FEEDS = [FEED_A, FEED_B]
+
 market_data_socket_urls = {
     B3: {
         TRADES: {

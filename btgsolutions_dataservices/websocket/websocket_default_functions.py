@@ -1,5 +1,8 @@
 import json 
 
+def _on_message_already_serialized(message):
+    print(message)
+
 def _on_message(message):
     print(json.loads(message))
 

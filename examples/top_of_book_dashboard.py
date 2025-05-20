@@ -20,20 +20,18 @@ class CustomClient:
         self.ticker_list = ticker_list
         self.reset_internal_states()
 
-        self.ws = btg.MarketDataWebSocketClient(
+        self.ws = btg.MarketDataFeed(
             api_key=api_key,
             stream_type='realtime',
             exchange='b3',
             data_type=data_type,
-            data_subtype=data_subtype
-        )
-
-        self.ws.run(
+            data_subtype=data_subtype,
             on_open=self.on_open_connection_callback,
             on_message=self.message_callback,
             reconnect=True,
-            default_logs=False
         )
+
+        self.ws.run()
 
     def reset_internal_states(self,):
         self.last_bid_and_offer_by_ticker = {}
@@ -51,8 +49,7 @@ class CustomClient:
 
         return f"up_to_date: {up_to_date} & blank_books: {blank_books} = {total} | available_to_subscribe = {available_number}"
     
-    def message_callback(self, ws_msg):
-        msg = json.loads(ws_msg)
+    def message_callback(self, msg):
 
         try:
             if msg["ev"] == "get_last_event":
@@ -134,19 +131,21 @@ class CustomClient:
         df = pd.DataFrame().from_dict(self.last_bid_and_offer_by_ticker).T
         return df
 
-@st.cache_resource
-def get_client():
-    return CustomClient(API_KEY, data_subtype=DATA_SUBTYPE, ticker_list=TICKERS_OF_INTEREST)
-client = get_client()
+if __name__ == "__main__":
 
-sleep(1)
+    @st.cache_resource
+    def get_client():
+        return CustomClient(API_KEY, data_subtype=DATA_SUBTYPE, ticker_list=TICKERS_OF_INTEREST)
+    client = get_client()
 
-with st.empty():
-    while True:
-        
-        df = client.get_bid_offer()
-        st.write(df)
-        print(f"{datetime.datetime.now()}| Internal state summary : {client.internal_dict_state_summary()}")
-        # print(set(client.available_to_subscribe) - set(list(client.last_bid_and_offer_by_ticker.keys())))
+    sleep(1)
 
-        sleep(1)
+    with st.empty():
+        while True:
+            
+            df = client.get_bid_offer()
+            st.write(df)
+            print(f"{datetime.datetime.now()}| Internal state summary : {client.internal_dict_state_summary()}")
+            # print(set(client.available_to_subscribe) - set(list(client.last_bid_and_offer_by_ticker.keys())))
+
+            sleep(1)

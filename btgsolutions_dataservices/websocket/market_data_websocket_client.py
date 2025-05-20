@@ -2,7 +2,7 @@
 from typing import Optional, List
 from ..exceptions import WSTypeError, DelayedError, FeedError
 from ..rest import Authenticator
-from ..config import market_data_socket_urls, market_data_feedb_socket_urls, MAX_WS_RECONNECT_RETRIES, VALID_STREAM_TYPES, VALID_EXCHANGES, VALID_MARKET_DATA_TYPES, VALID_MARKET_DATA_SUBTYPES, REALTIME, B3, TRADES, INDICES, ALL, STOCKS, BOOKS
+from ..config import market_data_socket_urls, market_data_feedb_socket_urls, MAX_WS_RECONNECT_RETRIES, VALID_STREAM_TYPES, VALID_EXCHANGES, VALID_MARKET_DATA_TYPES, VALID_MARKET_DATA_SUBTYPES, REALTIME, B3, TRADES, INDICES, ALL, STOCKS, BOOKS, FEED_A, FEED_B
 from .websocket_default_functions import _on_open, _on_message, _on_error, _on_close
 import websocket
 import json
@@ -80,7 +80,7 @@ class MarketDataWebSocketClient:
         data_subtype: Optional[str] = None,
         instruments: Optional[List[str]] = [],
         ssl: Optional[bool] = True,
-        feed: Optional[str] = "A",
+        feed: Optional[str] = FEED_A,
         **kwargs,
     ):
         self.api_key = api_key
@@ -114,7 +114,7 @@ class MarketDataWebSocketClient:
             raise FeedError(
                 f"Must provide a valid 'data_subtype' parameter. Valid options are: {VALID_MARKET_DATA_SUBTYPES}")
 
-        if feed == "B":
+        if feed == FEED_B:
             url_feed_map = market_data_feedb_socket_urls
         else:
             url_feed_map = market_data_socket_urls

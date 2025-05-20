@@ -176,6 +176,21 @@ ws.run(on_message=lambda message: print(message))
 #   sleep(1)
 ```
 
+### Market Data Feed
+
+```python
+import btgsolutions_dataservices as btg
+ws = btg.MarketDataFeed(api_key='YOUR_API_KEY', data_type='books', data_subtype='stocks')
+ws.run()
+
+## The following is optional to keep the program running in a .py file:
+# from time import sleep
+# sleep(2)
+# ws.subscribe(['PETR4'])
+# while True:
+#   sleep(1)
+```
+
 ### IntradayCandles
 
 ```python
