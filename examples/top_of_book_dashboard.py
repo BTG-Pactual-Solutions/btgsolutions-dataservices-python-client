@@ -11,7 +11,7 @@ from time import sleep
 import threading
 
 DATA_SUBTYPE = "stocks" # "stocks", 'derivatives', 'options'
-TICKERS_OF_INTEREST = ["BPAC11", "VALE3", "MGLU3", "AMER3", "SHOW3"]
+TICKERS_OF_INTEREST = [] # caso queira se subscrever em todos os tickers disponíveis, deixe a lista vazia
 
 class CustomClient:
 
@@ -74,13 +74,16 @@ class CustomClient:
                     return
                 else:
                     self.available_to_subscribe = msg["message"]
+                    if not self.ticker_list:
+                        print(f"subscribing all available tickers")
+                        tickers_to_subscribe = self.available_to_subscribe
+                    else:
+                        tickers_to_subscribe = set(self.available_to_subscribe) & set(self.ticker_list)
+                        not_available_to_subscribe = set(self.ticker_list) - set(self.available_to_subscribe)
+                        if len(not_available_to_subscribe) > 0:
+                            print(f"The following instruments of interest were not available to subscribe: {not_available_to_subscribe}. Check DataSubtype or ticker validity.")
 
-                    tickers_to_subscribe = set(self.available_to_subscribe) & set(self.ticker_list)
-                    not_available_to_subscribe = set(self.ticker_list) - set(self.available_to_subscribe)
-                    if len(not_available_to_subscribe) > 0:
-                        print(f"The following instruments of interest were not available to subscribe: {not_available_to_subscribe}. Check DataSubtype or ticker validity.")
-
-                    tickers_to_subscribe = list(tickers_to_subscribe)
+                        tickers_to_subscribe = list(tickers_to_subscribe)
                     self.fill_last_event(ticker_list=tickers_to_subscribe)
                     self.subscribe(tickers_to_subscribe)
         except Exception as e:

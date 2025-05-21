@@ -180,11 +180,15 @@ class MarketDataFeed:
         )
 
         def run_forever_new_thread():
-            ws_thread = websocket.WebSocketApp.run_forever
-
-            t = threading.Thread(target=lambda: ws_thread(ws))
+            ssl_conf = {} if self.ssl else {"sslopt": {"cert_reqs": ssl.CERT_NONE}}
+            t = threading.Thread(target=ws.run_forever, kwargs=ssl_conf)
             t.daemon = True
             t.start()
+
+            while True:
+                if ws.sock is not None and ws.sock.connected:
+                    break
+                pass
 
             while True:
                 try:
