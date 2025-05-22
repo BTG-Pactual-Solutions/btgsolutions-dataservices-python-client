@@ -102,14 +102,24 @@ class CustomClient:
         }
         last_update = None
 
-        if msg["bid"] and len(msg["bid"]) > 0:
-            last_bid_offer["bid"] = msg["bid"][0]["px"]
-            last_bid_offer["bid_vol"] = msg["bid"][0]["qty"]
-            last_update = msg["bid"][0]["datetime"]
-        if msg["offer"] and len(msg["offer"]) > 0:
-            last_bid_offer["ask"] = msg["offer"][0]["px"]
-            last_bid_offer["ask_vol"] = msg["offer"][0]["qty"]
-            last_update = msg["offer"][0]["datetime"]
+        if isinstance(msg.get("bid"), list):
+            if len(msg["bid"]) > 0:
+                last_bid_offer["bid"] = str(msg["bid"][0]["px"])
+                last_bid_offer["bid_vol"] = str(msg["bid"][0]["qty"])
+                last_update = msg["bid"][0]["datetime"]
+            else:
+                last_bid_offer["bid"] = "-"
+                last_bid_offer["bid_vol"] = "-"
+                last_update = datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z'
+        if isinstance(msg.get("offer"), list):
+            if len(msg["offer"]) > 0:
+                last_bid_offer["ask"] = str(msg["offer"][0]["px"])
+                last_bid_offer["ask_vol"] = str(msg["offer"][0]["qty"])
+                last_update = msg["offer"][0]["datetime"]
+            else:
+                last_bid_offer["ask"] = "-"
+                last_bid_offer["ask_vol"] = "-"
+                last_update = datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z'
         
         last_bid_offer["last_update"] = last_update
 
