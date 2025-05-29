@@ -4,6 +4,7 @@ import time
 from datetime import date
 import multiprocessing
 import logging
+from logging.handlers import QueueHandler, QueueListener
 import json
 import ssl
 import threading
@@ -89,6 +90,11 @@ class MarketDataFeed:
             2. close_msg.
         - Field is not required. 
         - Default: prints a message that the connection was closed.
+    log_level: str
+        Log level sets how much information the program will print to the log file.
+        Options: 'DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL', 'NOTSET'.
+        'DEBUG' provides the most detailed logs, with verbosity decreasing through each level down to 'NOTSET', which disables all logging.
+        Field is not required. Default: 'DEBUG'.
     """
 
     def __init__(
@@ -105,6 +111,7 @@ class MarketDataFeed:
         on_message: Optional[Callable]=None,
         on_error: Optional[Callable]=None,
         on_close: Optional[Callable]=None,
+        log_level: str="DEBUG",
     ):
 
         if feed == FEED_B:
@@ -131,35 +138,46 @@ class MarketDataFeed:
 
         self.server_message_queue = multiprocessing.Queue()
         self.client_message_queue = multiprocessing.Queue()
+        self.log_queue = multiprocessing.Queue()
+
+        log_level = getattr(logging, log_level)
+        self.log_level = log_level
+
+        log_handler = logging.FileHandler(filename=f"MarketDataFeed_{date.today().isoformat()}.log")
+        log_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
+
+        log_queue_listener = QueueListener(self.log_queue, log_handler)
+        log_queue_listener.start()
+
+        self.logger = logging.getLogger("main")
+        self.logger.setLevel(log_level)
+        self.logger.addHandler(QueueHandler(self.log_queue))
+
         self.process = None
         self.running = False
 
-        self.logger = logging.getLogger("MarketDataFeed")
-        self.logger.setLevel(logging.INFO)
-        log_file = f"MarketDataFeed_{date.today().isoformat()}.log"
-        handler = logging.FileHandler(log_file)
-        formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-        handler.setFormatter(formatter)
-        self.logger.addHandler(handler)
+    def _ws_client_process(self, server_message_queue: multiprocessing.Queue, client_message_queue: multiprocessing.Queue, log_queue: multiprocessing.Queue, log_level: int):
 
-    def _ws_client_process(self, server_message_queue: multiprocessing.Queue, client_message_queue: multiprocessing.Queue, logger: logging.Logger):
+        logger = logging.getLogger("client")
+        logger.setLevel(log_level)
+        logger.addHandler(QueueHandler(log_queue))
 
         def on_message(ws, message):
             server_message_queue.put(json.loads(message))
 
         def on_error(ws, error):
-            logger.info(f"On Error | {error}")
+            logger.error(f"On Error | {error}")
             self.on_error(error)
 
         def on_close(ws, close_status_code, close_msg):
-            logger.info(f"On Close | Connection closed")
+            logger.warning(f"On Close | Connection closed")
             self.on_close(close_status_code, close_msg)
             if self.reconnect:
                 if self.__nro_reconnect_retries == MAX_WS_RECONNECT_RETRIES:
-                    logger.info(f"On Close | Maximum number of reconnect attempts reached")
+                    logger.critical(f"On Close | Maximum number of reconnect attempts reached")
                     return
                 self.__nro_reconnect_retries += 1
-                logger.info(f"On Close | Reconnecting... attempt: {self.__nro_reconnect_retries}/{MAX_WS_RECONNECT_RETRIES}")
+                logger.warning(f"On Close | Reconnecting... attempt: {self.__nro_reconnect_retries}/{MAX_WS_RECONNECT_RETRIES}")
                 run_forever_new_thread()
 
         def on_open(ws):
@@ -206,7 +224,7 @@ class MarketDataFeed:
         """
         Opens a new connection with the websocket server.
         """
-        self.process = multiprocessing.Process(target=self._ws_client_process, args=(self.server_message_queue, self.client_message_queue, self.logger))
+        self.process = multiprocessing.Process(target=self._ws_client_process, args=(self.server_message_queue, self.client_message_queue, self.log_queue, self.log_level))
         self.process.start()
         self.running = True
 
@@ -217,12 +235,12 @@ class MarketDataFeed:
                     msg = self.server_message_queue.get()
                     self.on_message(msg)
                 else:
-                    time.sleep(0.1)
+                    time.sleep(0.01)
 
                 if time.time() - log_timer >= 5.0:
                     server_queue_size = self.server_message_queue.qsize()
                     client_queue_size = self.client_message_queue.qsize()
-                    self.logger.info(f"Server queue: {server_queue_size} | Client queue: {client_queue_size}")
+                    self.logger.debug(f"Server queue: {server_queue_size} | Client queue: {client_queue_size}")
                     log_timer = time.time()
         
         threading.Thread(target=run_on_new_thread).start()

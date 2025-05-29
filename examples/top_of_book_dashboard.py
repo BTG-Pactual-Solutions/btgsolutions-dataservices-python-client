@@ -15,7 +15,7 @@ TICKERS_OF_INTEREST = [] # caso queira se subscrever em todos os tickers dispon√
 
 class CustomClient:
 
-    def __init__(self, api_key:str, data_subtype:str, data_type:str='books', ticker_list=None):
+    def __init__(self, api_key:str, data_subtype:str, data_type:str='books', ticker_list=None, log_level:str='DEBUG'):
 
         self.ticker_list = ticker_list
         self.reset_internal_states()
@@ -29,6 +29,7 @@ class CustomClient:
             on_open=self.on_open_connection_callback,
             on_message=self.message_callback,
             reconnect=True,
+            log_level=log_level,
         )
 
         self.ws.run()
