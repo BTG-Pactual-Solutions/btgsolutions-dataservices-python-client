@@ -219,6 +219,14 @@ hist_candles = btg.HistoricalCandles(api_key='YOUR_API_KEY')
 hist_candles.get_intraday_history_candles(ticker='PETR4',  market_type='stocks', corporate_events_adj=True, date='2023-10-06', candle='1m', rmv_after_market=True, timezone='UTC', raw_data=False)
 ```
 
+##### Available Tickers
+
+```python
+import btgsolutions_dataservices as btg
+hist_candles = btg.HistoricalCandles(api_key='YOUR_API_KEY')
+hist_candles.get_available_tickers(market_type='stocks', date='2025-05-29')
+```
+
 ##### Plot Candles
 
 ```python

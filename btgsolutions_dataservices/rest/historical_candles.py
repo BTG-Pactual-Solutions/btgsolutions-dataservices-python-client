@@ -159,3 +159,31 @@ class HistoricalCandles:
 
         response = json.loads(response.text)
         raise BadResponse(f'Error: {response.get("ApiClientError", "")}.\n{response.get("SuggestedAction", "")}')
+
+    def get_available_tickers(
+        self,
+        market_type:str,
+        date:str,
+    ):
+        """
+        This method provides all tickers available for query.   
+
+        Parameters
+        ----------------
+        market_type: str
+            Market type.
+            Options: 'stocks', 'derivatives' or 'indices'.
+            Field is required.
+        date: string<date>
+            Date of requested data. Format: "YYYY-MM-DD".
+            Field is required. Example: '2023-10-06'.
+        """
+
+        if market_type not in ['stocks', 'derivatives', 'indices']: raise MarketTypeError(f"Must provide a valid 'market_type' parameter. Input: '{market_type}'. Accepted values: 'stocks', 'derivatives' or 'indices'.")
+
+        url = f"{url_apis_v3}/marketdata/history/candles/available-tickers/{market_type}?date={date}"
+
+        response = requests.request("GET", url,  headers=self.headers)
+        if response.status_code == 200: return response.json()
+        response = response.json()
+        raise BadResponse(f'Error: {response.get("ApiClientError", "") or response.get("ApiServerMessage", "")}.\n{response.get("SuggestedAction", "")}')
