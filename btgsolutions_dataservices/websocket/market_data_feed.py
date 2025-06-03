@@ -261,8 +261,10 @@ class MarketDataFeed:
                         continue
                     
                     if time.time() - log_timer >= log_metrics_interval:
-                        latency_str = round(self.head_avg_latency, 1) if self.head_avg_latency != 0 else "N/A"
-                        logger.debug(f"HEAD - (ServerQ) Relative Latency: {latency_str} ms")
+                        if self.head_avg_latency == 0:
+                            logger.debug(f"HEAD - (ServerQ) Relative Latency: N/A; Throughput: N/A")
+                        else:
+                            logger.debug(f"HEAD - (ServerQ) Relative Latency: {round(self.head_avg_latency, 1)} ms; Throughput: {round(self.head_message_count/log_metrics_interval, 1)} msg/s")
                         self.head_message_count = 0
                         self.head_avg_latency = 0
                         log_timer = time.time()
