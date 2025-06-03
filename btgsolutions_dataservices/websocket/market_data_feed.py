@@ -1,18 +1,29 @@
 from typing import Optional, Callable, List
 import websocket
 import time
-from datetime import date
+from datetime import date, datetime
 import multiprocessing
 import logging
 from logging.handlers import QueueHandler, QueueListener
 import json
 import ssl
 import threading
+import uuid
 from ..rest import Authenticator
 from ..config import market_data_socket_urls, market_data_feedb_socket_urls, REALTIME, B3, TRADES, BOOKS, FEED_A, FEED_B, MAX_WS_RECONNECT_RETRIES
 from .websocket_default_functions import _on_open, _on_message_already_serialized, _on_error, _on_close
 
 multiprocessing.set_start_method("spawn", force=True)
+
+class LogConstFilter(logging.Filter):
+    def __init__(self, consts):
+        super().__init__()
+        self.consts = consts
+
+    def filter(self, record):
+        for key, value in self.consts.items():
+            setattr(record, key, value)
+        return True
 
 class MarketDataFeed:
     """
@@ -136,6 +147,9 @@ class MarketDataFeed:
         self.reconnect = reconnect
         self.__nro_reconnect_retries = 0
 
+        client_feed = f'feed_{exchange}_{data_type}_{stream_type}_{data_subtype}'
+        client_id = str(uuid.uuid4())
+
         self.server_message_queue = multiprocessing.Queue()
         self.client_message_queue = multiprocessing.Queue()
         self.log_queue = multiprocessing.Queue()
@@ -143,8 +157,10 @@ class MarketDataFeed:
         log_level = getattr(logging, log_level)
         self.log_level = log_level
 
+        log_constants = {'client_feed': client_feed, 'client_id': client_id}
         log_handler = logging.FileHandler(filename=f"MarketDataFeed_{date.today().isoformat()}.log")
-        log_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
+        log_handler.setFormatter(logging.Formatter('%(asctime)s - %(client_feed)s - %(client_id)s - %(levelname)s - %(message)s'))
+        log_handler.addFilter(LogConstFilter(log_constants))
 
         log_queue_listener = QueueListener(self.log_queue, log_handler)
         log_queue_listener.start()
@@ -156,6 +172,9 @@ class MarketDataFeed:
         self.process = None
         self.running = False
 
+        self.head_message_count = 0
+        self.head_avg_latency = 0
+
     def _ws_client_process(self, server_message_queue: multiprocessing.Queue, client_message_queue: multiprocessing.Queue, log_queue: multiprocessing.Queue, log_level: int):
 
         logger = logging.getLogger("client")
@@ -163,7 +182,27 @@ class MarketDataFeed:
         logger.addHandler(QueueHandler(log_queue))
 
         def on_message(ws, message):
-            server_message_queue.put(json.loads(message))
+            message = json.loads(message)
+            server_message_queue.put(message)
+
+            if self.log_level != logging.DEBUG:
+                return
+
+            msg_datetime = None
+            if self.data_type == BOOKS:
+                bid = message.get("bid")
+                offer = message.get("offer")
+                if bid:
+                    msg_datetime = bid[0]["datetime"]
+                elif offer:
+                    msg_datetime = offer[0]["datetime"]
+            else:
+                msg_datetime = message.get("tTime")
+            if msg_datetime:
+                msg_datetime = datetime.strptime(msg_datetime, "%Y-%m-%dT%H:%M:%S.%fZ")
+                latency = (time.time() - msg_datetime.timestamp()) * 1000
+                self.head_message_count += 1
+                self.head_avg_latency += (latency - self.head_avg_latency) / self.head_message_count
 
         def on_error(ws, error):
             logger.error(f"On Error | {error}")
@@ -208,15 +247,28 @@ class MarketDataFeed:
                     break
                 pass
 
+            log_metrics_interval = 5
+            log_timer = time.time()
             while True:
                 try:
                     if not client_message_queue.empty():
                         msg = client_message_queue.get()
                         ws.send(json.dumps(msg))
                     else:
-                        time.sleep(0.05)
+                        time.sleep(0.01)
+                    
+                    if self.log_level != logging.DEBUG:
+                        continue
+                    
+                    if time.time() - log_timer >= log_metrics_interval:
+                        latency_str = round(self.head_avg_latency, 1) if self.head_avg_latency != 0 else "N/A"
+                        logger.debug(f"HEAD - (ServerQ) Relative Latency: {latency_str} ms")
+                        self.head_message_count = 0
+                        self.head_avg_latency = 0
+                        log_timer = time.time()
+
                 except Exception as e:
-                    time.sleep(0.1)
+                    time.sleep(0.01)
 
         run_forever_new_thread()
 
@@ -230,18 +282,49 @@ class MarketDataFeed:
 
         def run_on_new_thread(*args):
             log_timer = time.time()
+            log_metrics_interval = 5
+
+            message_count = 0
+            latency_message_count = 0
+            latency_average = 0
             while self.running:
                 if not self.server_message_queue.empty():
                     msg = self.server_message_queue.get()
                     self.on_message(msg)
+
+                    if self.log_level != logging.DEBUG:
+                        continue
+                    
+                    message_count += 1
+                    msg_datetime = None
+                    if self.data_type == BOOKS:
+                        bid = msg.get("bid")
+                        offer = msg.get("offer")
+                        if bid:
+                            msg_datetime = bid[0]["datetime"]
+                        elif offer:
+                            msg_datetime = offer[0]["datetime"]
+                    else:
+                        msg_datetime = msg.get("tTime")
+                    if msg_datetime:
+                        msg_datetime = datetime.strptime(msg_datetime, "%Y-%m-%dT%H:%M:%S.%fZ")
+                        latency = (time.time() - msg_datetime.timestamp()) * 1000
+                        latency_message_count += 1
+                        latency_average += (latency - latency_average) / latency_message_count
                 else:
                     time.sleep(0.01)
 
-                if time.time() - log_timer >= 5.0:
+                if time.time() - log_timer >= log_metrics_interval:
                     server_queue_size = self.server_message_queue.qsize()
                     client_queue_size = self.client_message_queue.qsize()
-                    self.logger.debug(f"Server queue: {server_queue_size} | Client queue: {client_queue_size}")
+                    if message_count == 0:
+                        self.logger.debug(f"TAIL - (ServerQ) Relative Latency: N/A; Throughput: N/A; Size: {server_queue_size} | (ClientQ) Size: {client_queue_size}")
+                    else:
+                        self.logger.debug(f"TAIL - (ServerQ) Relative Latency: {round(latency_average, 1)} ms; Throughput: {round(message_count/log_metrics_interval, 1)} msg/s; Size: {server_queue_size} | (ClientQ) Size: {client_queue_size}")
                     log_timer = time.time()
+                    message_count = 0
+                    latency_message_count = 0
+                    latency_average = 0
         
         threading.Thread(target=run_on_new_thread).start()
 

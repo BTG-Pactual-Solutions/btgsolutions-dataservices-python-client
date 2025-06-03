@@ -85,8 +85,8 @@ class CustomClient:
                             print(f"The following instruments of interest were not available to subscribe: {not_available_to_subscribe}. Check DataSubtype or ticker validity.")
 
                         tickers_to_subscribe = list(tickers_to_subscribe)
-                    self.fill_last_event(ticker_list=tickers_to_subscribe)
                     self.subscribe(tickers_to_subscribe)
+                    self.fill_last_event(ticker_list=tickers_to_subscribe)
         except Exception as e:
             # print(msg)
             # print(e)
