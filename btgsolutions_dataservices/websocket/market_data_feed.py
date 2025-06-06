@@ -254,8 +254,6 @@ class MarketDataFeed:
                     if not client_message_queue.empty():
                         msg = client_message_queue.get()
                         ws.send(json.dumps(msg))
-                    else:
-                        time.sleep(0.01)
                     
                     if self.log_level != logging.DEBUG:
                         continue
@@ -313,8 +311,6 @@ class MarketDataFeed:
                         latency = (time.time() - msg_datetime.timestamp()) * 1000
                         latency_message_count += 1
                         latency_average += (latency - latency_average) / latency_message_count
-                else:
-                    time.sleep(0.01)
 
                 if time.time() - log_timer >= log_metrics_interval:
                     server_queue_size = self.server_message_queue.qsize()
