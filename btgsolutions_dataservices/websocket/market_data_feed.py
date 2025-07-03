@@ -175,6 +175,11 @@ class MarketDataFeed:
         self.head_message_count = 0
         self.head_avg_latency = 0
 
+        self.instruments = []
+
+    def set_instruments(self, instruments: List[str]):
+        self.instruments = instruments
+
     def _ws_client_process(self, server_message_queue: multiprocessing.Queue, client_message_queue: multiprocessing.Queue, log_queue: multiprocessing.Queue, log_level: int):
 
         logger = logging.getLogger("client")
@@ -221,6 +226,9 @@ class MarketDataFeed:
 
         def on_open(ws):
             logger.info(f"On Open | Connection open")
+            if self.instruments:
+                logger.info(f"On Open | Subscribing to {len(self.instruments)} instruments")
+                self.subscribe(self.instruments)
             self.on_open()
             self.__nro_reconnect_retries = 0
 
