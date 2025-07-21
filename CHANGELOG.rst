@@ -1,3 +1,12 @@
+2.12.0 (2025-07-21)
+
+
+Added
+
+
+- Added new method 'get_tobs' to TickerLastEvent module (#1)
+
+
 2.11.0 (2025-05-21)
 
 
