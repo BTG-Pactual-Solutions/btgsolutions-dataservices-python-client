@@ -267,7 +267,7 @@ class MarketDataWebSocketClient:
         """
         self.ws.close()
 
-    def subscribe(self, list_instruments, n=None):
+    def subscribe(self, list_instruments, n=None, initial_snapshot: bool=False):
         """
         Subscribes a list of instruments.
 
@@ -278,12 +278,19 @@ class MarketDataWebSocketClient:
         n: int
             Field is not required.
             **For books data_type only.**
-            Maximum book level. It must be between 1 and 10.    
+            Maximum book level. It must be between 1 and 10. 
+        initial_snapshot: float
+            If True, client receives ticker last event (snapshot) of the provided ticker. 
+            Field is not required.
+            Default: False
         """
 
-        if self.data_type == BOOKS and n is not None:
-            self.__send({'action': 'subscribe', 'params': {"tickers": list_instruments, "n": n}})
-            self.__print(f'Socket subscribed the following instrument(s) with n = {n}: {list_instruments}')
+        if initial_snapshot or n is not None:
+            message = {'action': 'subscribe', 'params': {"tickers": list_instruments, "initial_snapshot": initial_snapshot}}
+            if n is not None:
+                message['params']['n'] = n
+            self.__send(message)
+            self.__print(f'Socket subscribed the following instrument(s) with n = {n}: {list_instruments} and initial_snapshot = {initial_snapshot}')
         else:
             self.__send({'action': 'subscribe', 'params': list_instruments})
             self.__print(f'Socket subscribed the following instrument(s): {list_instruments}')

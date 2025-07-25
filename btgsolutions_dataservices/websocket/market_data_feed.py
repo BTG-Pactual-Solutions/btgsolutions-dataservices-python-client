@@ -351,7 +351,7 @@ class MarketDataFeed:
             message = json.dumps(message)
         self.client_message_queue.put(json.loads(message))
 
-    def subscribe(self, list_instruments: List[str], n=None):
+    def subscribe(self, list_instruments: List[str], n=None, initial_snapshot: bool=False):
         """
         Subscribes a list of instruments.
 
@@ -363,9 +363,17 @@ class MarketDataFeed:
             Field is not required.
             **For books data_type only.**
             Maximum book level. It must be between 1 and 10.    
+        initial_snapshot: float
+            If True, client receives ticker last event (snapshot) of the provided ticker. 
+            Field is not required.
+            Default: False
         """
-        if self.data_type == BOOKS and n is not None:
-            self._send({'action': 'subscribe', 'params': {"tickers": list_instruments, "n": n}})
+
+        if initial_snapshot or n is not None:
+            message = {'action': 'subscribe', 'params': {"tickers": list_instruments, "initial_snapshot": initial_snapshot}}
+            if n is not None:
+                message['params']['n'] = n
+            self._send(message)
         else:
             self._send({'action': 'subscribe', 'params': list_instruments})
 

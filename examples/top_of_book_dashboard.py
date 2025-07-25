@@ -86,7 +86,7 @@ class CustomClient:
 
                         tickers_to_subscribe = list(tickers_to_subscribe)
                     self.subscribe(tickers_to_subscribe)
-                    self.fill_last_event(ticker_list=tickers_to_subscribe)
+                    # self.fill_last_event(ticker_list=tickers_to_subscribe)
         except Exception as e:
             # print(msg)
             # print(e)
@@ -132,7 +132,7 @@ class CustomClient:
         self.request_available_tickers_to_subscribe()
     
     def subscribe(self, tickers:list):
-        self.ws.subscribe(tickers, n=1)
+        self.ws.subscribe(tickers, n=1, initial_snapshot=True)
 
     def fill_last_event(self, ticker_list:list=None):
         if ticker_list:
